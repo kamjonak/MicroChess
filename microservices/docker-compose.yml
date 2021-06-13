@@ -1,0 +1,32 @@
+version: '3.2'
+
+services:
+  app:
+    # environment:
+    #   ZMIENNA: middle://:@middle:9000/0
+
+    image: nginx:1.13-alpine
+    ports:
+      - 8002:80/tcp
+    volumes:
+      - ./front/public:/usr/share/nginx/html
+    networks:
+      - relations-1
+    container_name: front
+    depends_on:
+      - middle
+
+  middle:
+    image: node:14
+    build: 
+      context: "./"
+      dockerfile: Dockerfile
+    ports:
+      - 9000:9000
+    volumes:
+      - ./middle:/middle
+    networks:
+      - relations-1
+
+networks:
+    relations-1:
