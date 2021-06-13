@@ -1,10 +1,15 @@
 
 function doSomething() {
-    alert("siema");
+    var xd = prompt("please choose your text");
+    var url = document.location.protocol + "//" + document.location.hostname + ":9000";
     $.ajax({
-        url: "http://middle",
-        success: function (data) {
-            alert("GONWO");
+        url: url,
+        data: {"content": xd},
+        success: function(data) {
+            alert(data);
+        }, 
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
         }
     });
     alert("po");
