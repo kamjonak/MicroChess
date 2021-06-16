@@ -1,14 +1,15 @@
-version: '3.2'
+version: '3.4'
 
 services:
-  app:
-    image: nginx:1.13-alpine
+  front:
+    image: node:14
     ports:
       - 8002:80/tcp
     volumes:
-      - ./front/public:/usr/share/nginx/html
+      - ./front:/front
+    build: ./front
     container_name: front
-    depends_on:
+    depends_on: 
       - middle
 
   middle:
@@ -19,9 +20,7 @@ services:
       - ./middle:/middle
     networks:
       - relations-1
-    build: 
-      context: "./"
-      dockerfile: Dockerfile
+    build: ./middle
     depends_on:
       - redis
     container_name: middle
