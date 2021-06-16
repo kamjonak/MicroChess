@@ -7,8 +7,10 @@ services:
       - 8002:80/tcp
     volumes:
       - ./front:/front
-    command: bash -c "npm install express cors pug && node front/front.js"
+    command: bash -c "npm install express cors ejs axios && node front/front.js"
     container_name: front
+    networks: 
+      - relations-1
     depends_on: 
       - middle
 

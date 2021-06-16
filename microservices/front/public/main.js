@@ -1,7 +1,7 @@
 
-function doSomething() {
+function send() {
     var xd = prompt("please choose your text");
-    var url = document.location.protocol + "//" + document.location.hostname + ":9000";
+    var url = "/send";
     $.ajax({
         url: url,
         data: {"content": xd},
@@ -15,8 +15,8 @@ function doSomething() {
     alert("po");
 }
 
-function doSomething2() {
-    var url = document.location.protocol + "//" + document.location.hostname + ":9000/read";
+function read() {
+    var url = "/read";
     $.ajax({
         url: url,
         success: function(data) {
