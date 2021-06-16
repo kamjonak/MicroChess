@@ -7,7 +7,7 @@ services:
       - 8002:80/tcp
     volumes:
       - ./front:/front
-    build: ./front
+    command: bash -c "npm install express cors pug && node front/front.js"
     container_name: front
     depends_on: 
       - middle
@@ -20,7 +20,7 @@ services:
       - ./middle:/middle
     networks:
       - relations-1
-    build: ./middle
+    command: bash -c "npm install express cors ioredis && node middle/middle.js"
     depends_on:
       - redis
     container_name: middle
