@@ -6,13 +6,11 @@ function send() {
         url: url,
         data: {"content": xd},
         success: function(data) {
-            alert(data);
         }, 
         error: function(xhr, status, error) {
             alert(xhr.responseText);
         }
     });
-    alert("po");
 }
 
 function read() {
@@ -20,11 +18,10 @@ function read() {
     $.ajax({
         url: url,
         success: function(data) {
-            alert(data);
+            document.getElementById("elements").innerHTML = data;
         }, 
         error: function(xhr, status, error) {
             alert(xhr.responseText);
         }
     });
-    alert("po");
 }

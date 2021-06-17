@@ -4,7 +4,6 @@ const express = require('express');
 var cors = require('cors');
 const path = require('path');
 const axios = require('axios');
-const oro = new express({host: 'middle'});
 
 const PORT = 80;
 const HOST = '0.0.0.0';
@@ -24,26 +23,36 @@ app.get('/', (req, res) => {
 });
 
 app.get('/send', (req, res) => {
-    //console.log('siema');
-    oro.send("siemanero");
+    console.log('sending to middle');
+    console.log(req.query.content);
+    axios
+        .post('http://middle:9000/send/', {
+            query: req.query.content
+        })
+        .then(function (response) {
+            console.log("response");
+        })
+        .catch(function (error) {
+            console.log("error");
+        }); 
 
-    // axios
-    //     .get('middle:/send', {
-    //     })
-    //     .then(res2 => {
-    //         console.log(`statusCode: ${res2.statusCode}`);
-    //         console.log(res2);
-    //     })
-    //     .catch(error => {
-    //         console.error(error);
-    //     });
-
-    // res.send('ok');
+    res.send('ok');
 });
 
 app.get('/read', (req, res) => {
-    console.log('siema2');
-    res.send('ok');
+    console.log('reading from middle');
+    axios
+        .post('http://middle:9000/read/', {
+            query: req.query.content
+        })
+        .then(function (response) {
+            console.log("response:");
+            console.log(response.data);
+            res.send(response.data);
+        })
+        .catch(function (error) {
+            console.log("error");
+        }); 
 });
 
 app.listen(PORT, HOST);
