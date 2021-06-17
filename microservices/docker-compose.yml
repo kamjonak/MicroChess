@@ -7,7 +7,7 @@ services:
       - 8002:80/tcp
     volumes:
       - ./front:/front
-    command: bash -c "npm install body-parser express cors ejs axios && node front/front.js"
+    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express cors ejs axios && node front/front.js"
     container_name: front
     networks: 
       - relations-1
