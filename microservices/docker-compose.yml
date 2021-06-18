@@ -1,19 +1,6 @@
 version: '3.4'
 
 services:
-  front:
-    image: node:14
-    ports:
-      - 8002:80/tcp
-    volumes:
-      - ./front:/front
-    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express cors ejs axios && node front/front.js"
-    container_name: front
-    networks: 
-      - relations-1
-    depends_on: 
-      - middle
-
   middle:
     image: node:14
     ports:
@@ -37,6 +24,25 @@ services:
       - relations-1
     command: bash -c 'redis-server'
     container_name: redis
+
+  front:
+    container_name: front
+    image: node:14
+    restart: always
+    build: ./front
+    ports:
+      - "7500:7500"
+    links:
+      - mongo
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - '27017:27017'
+    command: mongod --quiet --logpath /dev/null
 
 networks:
     relations-1:
