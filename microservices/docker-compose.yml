@@ -12,31 +12,31 @@ services:
     networks: 
       - relations-1
     depends_on: 
-      - middle
+      - users
 
-  middle:
+  users:
     image: node:14
     ports:
       - 9000:9000
     volumes:
-      - ./middle:/middle
+      - ./users:/users
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors ioredis && node middle/middle.js"
+    command: bash -c "npm install body-parser express cors ioredis mongoose && node users/users.js"
     depends_on:
-      - redis
-    container_name: middle
+      - users_db
+    container_name: users
 
-  redis:
-    image: redis:4.0.2
-    ports:
-      - 6379:6379
-    expose:
-      - 6379
+  users_db:
+    image: mongo:latest
+    volumes:
+      - ./data:/data/db
+    ports: 
+      - 27017:27017
     networks:
       - relations-1
-    command: bash -c 'redis-server'
-    container_name: redis
+    command: mongod --quiet --logpath /dev/null
+    container_name: users_db
 
 networks:
     relations-1:
