@@ -4,7 +4,6 @@ const express = require('express');
 var cors = require('cors');
 const users_db = require('mongoose');
 var bodyParser = require('body-parser')
-// var User = require('./models/user');
 
 // Constants
 const PORT = 9000;
@@ -12,8 +11,8 @@ const HOST = '0.0.0.0';
 
 // App
 const app = express();
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+app.use(express.json());       // to support JSON-encoded bodies
+app.use(express.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
@@ -21,18 +20,15 @@ app.use(cors())
 
 const options = {
     autoIndex: false, // Don't build indexes
-    reconnectTries: 30, // Retry up to 30 times
-    reconnectInterval: 500, // Reconnect every 500ms
     poolSize: 10, // Maintain up to 10 socket connections
-    // If not connected, return errors immediately rather than waiting for reconnect
-    bufferMaxEntries: 0
+    bufferMaxEntries: 0,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 }
 
 const connectWithRetry = () => {
-  //console.log('MongoDB connection with retry')
   users_db.connect("mongodb://users_db:27017/test", options).then(()=>{
     console.log('MongoDB is connected');
-    //users_db.createCollection("users", function (err, ));
   }).catch(err=>{
     console.log('MongoDB connection unsuccessful, retry after 5 seconds.')
     setTimeout(connectWithRetry, 5000)
@@ -47,7 +43,6 @@ let UserSchema = new users_db.Schema({
 });
 
 const User = users_db.model("User", UserSchema);
-
 
 
 app.post('/login', (req, res) => {
