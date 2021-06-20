@@ -26,7 +26,7 @@ const options = {
     useUnifiedTopology: true
 }
 
-const connectWithRetry = () => {
+const connectToDb = () => {
   users_db.connect("mongodb://users_db:27017/test", options).then(()=>{
     console.log('MongoDB is connected');
   }).catch(err=>{
@@ -35,7 +35,7 @@ const connectWithRetry = () => {
   })
 }
 
-connectWithRetry();
+connectToDb();
 
 let UserSchema = new users_db.Schema({
     username: String,

@@ -109,6 +109,32 @@ var config = {
   onDrop: onDrop,
   onSnapEnd: onSnapEnd
 }
-board = Chessboard('myBoard', config)
+board = Chessboard('myBoard', config);
 
-updateStatus()
+updateStatus();
+
+function send_rabbit() {
+  var url = "/send_rabbit";
+  $.ajax({
+      url: url,
+      success: function(data) {
+          alert(data);
+      }, 
+      error: function(xhr, status, error) {
+          alert(xhr.responseText);
+      }
+  });
+}
+
+function receive_rabbit() {
+  var url = "/receive_rabbit";
+  $.ajax({
+      url: url,
+      success: function(data) {
+          alert(data);
+      }, 
+      error: function(xhr, status, error) {
+          alert(xhr.responseText);
+      }
+  });
+}
