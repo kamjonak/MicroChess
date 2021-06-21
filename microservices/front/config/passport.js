@@ -4,7 +4,7 @@ const axios = require('axios');
 module.exports = function(passport){
     passport.use(
         new LocalStrategy({usernameField: "name"}, (name,password,done)=>{
-            console.log("tutaj");
+            // console.log("tutaj");
             // if (email == "admin@admin.com" && password == "admin") {
             //     console.log("oro1");
             //     return done(null, "admin");
@@ -23,7 +23,7 @@ module.exports = function(passport){
                     password: password
                 })
                 .then(function (response) {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if(response.data.name != 'error')
                         return done(null, response.data);
                     else
@@ -55,13 +55,13 @@ module.exports = function(passport){
         })
     )
     passport.serializeUser(function(user,done) {
-        console.log("seriazlie");
+        // console.log("seriazlie");
         console.log(user);
 
         done(null,user.name);
     })
     passport.deserializeUser(function(name,done){
-        console.log("deserialize");
+        // console.log("deserialize");
         //done(err, user);
         return done(null, name);
 

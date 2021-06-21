@@ -1,32 +1,4 @@
 
-function send() {
-    var xd = prompt("please choose your text");
-    var url = "/send";
-    $.ajax({
-        url: url,
-        data: {"content": xd},
-        success: function(data) {
-        }, 
-        error: function(xhr, status, error) {
-            alert(xhr.responseText);
-        }
-    });
-}
-
-function read() {
-    var url = "/read";
-    $.ajax({
-        url: url,
-        success: function(data) {
-            document.getElementById("elements").innerHTML = data;
-        }, 
-        error: function(xhr, status, error) {
-            alert(xhr.responseText);
-        }
-    });
-}
-
-
 var board = null
 var game = new Chess()
 var $status = $('#status')
@@ -105,6 +77,7 @@ function updateStatus () {
 var config = {
   draggable: true,
   position: 'start',
+  orientation: my_color,
   onDragStart: onDragStart,
   onDrop: onDrop,
   onSnapEnd: onSnapEnd
@@ -113,28 +86,6 @@ board = Chessboard('myBoard', config);
 
 updateStatus();
 
-function send_rabbit() {
-  var url = "/send_rabbit";
-  $.ajax({
-      url: url,
-      success: function(data) {
-          alert(data);
-      }, 
-      error: function(xhr, status, error) {
-          alert(xhr.responseText);
-      }
-  });
-}
-
-function receive_rabbit() {
-  var url = "/receive_rabbit";
-  $.ajax({
-      url: url,
-      success: function(data) {
-          alert(data);
-      }, 
-      error: function(xhr, status, error) {
-          alert(xhr.responseText);
-      }
-  });
+function go_back() {
+  window.location.replace('/test')
 }

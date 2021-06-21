@@ -14,6 +14,7 @@ services:
     depends_on: 
       - users
       - matchmaking_queue
+      - game_server
 
   users:
     image: node:14
@@ -47,7 +48,7 @@ services:
       - ./matchmaking_server:/matchmaking_server
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors amqplib && node matchmaking_server/matchmaking.js"
+    command: bash -c "npm install body-parser express cors axios amqplib && node matchmaking_server/matchmaking.js"
     depends_on:
       - matchmaking_queue
     container_name: matchmaking_server
@@ -60,6 +61,17 @@ services:
     networks:
       - relations-1
     container_name: "matchmaking_queue"
+
+  game_server:
+    image: node:14
+    ports:
+      - 9002:9002
+    volumes:
+      - ./game_server:/game_server
+    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express express-session express-ejs-layouts cors ejs axios amqplib && node game_server/game_server.js"
+    container_name: game_server
+    networks: 
+      - relations-1
 
 networks:
     relations-1:

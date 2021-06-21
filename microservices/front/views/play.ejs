@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pl">
+
+<head>
+  <meta charset="utf-8">
+  <title>MicroChess</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
+        crossorigin="anonymous"></script>
+
+  <script src='/js/chess.js'></script>
+  <script src='/js/chessboard-1.0.0.js'></script>
+  <link rel='stylesheet' href='/css/chessboard-1.0.0.css'>
+  <script>
+      var my_color = "<%= color %>"
+  </script>
+</head>
+
+<body>
+  <div id="myBoard" style="width: 400px"></div>
+  <label>Status:</label>
+  <div id="status"></div>
+  <label>FEN:</label>
+  <div id="fen"></div>
+  <label>PGN:</label>
+  <div id="pgn"></div>
+
+  <!-- <div onclick="send()">Send</div>
+  <div onclick="read()">read</div> -->
+  <div onclick="restart()">Restart</div>
+  <div onclick="go_back()">Go back</div>
+  <p> Your opponent: <%= opponent %></p>
+  <p> Your color: <%= color %></p>
+
+<a href="/users/logout">Logout</a>
+</body>
+<script src="/main.js"></script>
+</html>

@@ -3,6 +3,7 @@
 const express = require('express');
 var cors = require('cors');
 var amqp = require('amqplib/callback_api');
+const axios = require('axios');
 
 var global_var = null;
 
@@ -19,6 +20,9 @@ app.use(express.urlencoded({     // to support URL-encoded bodies
 
 app.use(cors())
 
+var pairing = {}
+var last = null
+
 function connect_to_rabbit() {
     amqp.connect('amqp://matchmaking_queue', function(error0, connection){
         if (error0) {
@@ -31,7 +35,7 @@ function connect_to_rabbit() {
                 if (error1) {
                     throw error1;
                 }
-                var queue = 'hello';
+                var queue = 'matchmakingQueue';
             
                 channel.assertQueue(queue, {
                     durable: false
@@ -39,7 +43,29 @@ function connect_to_rabbit() {
 
                 channel.consume(queue, function(msg) {
                     console.log(" [x] Received %s", msg.content.toString());
-                    global_var = msg.content.toString();
+                    if (last == null) {
+                        last = msg.content.toString()
+                    }
+                    else {
+                        pairing[last] = {opponent: msg.content.toString(), color: 'white'}
+                        pairing[msg.content.toString()] = {opponent: last, color: 'black'}
+                        let last_cp = last
+                        last = null
+                        // TODO: info do game server
+                        axios
+                            .post('http://game_server:9002/create_match/', {
+                                player1: msg.content.toString(),
+                                player2: last_cp
+                            })
+                            .then(function (response) {
+                                console.log(response.data);
+                                res.send("ok")
+                            })
+                            .catch(function (error) {
+                                console.log("error");
+                                res.send("error");
+                            });
+                    }
                   }, {
                       noAck: true
                     });
@@ -56,19 +82,22 @@ app.get('/', (req, res) => {
     
 });
 
-app.get('/get_var', (req, res) => {
+app.post('/get_match', (req, res) => {
     console.log("get_Var");
-    if(global_var == null) {
-        console.log("NULL");
-        res.send({is_set: false})
+    let user = req.body.user
+    console.log("user: " + user)
+    console.log(pairing)
+    console.log(last)
+    if(user in pairing) {
+        console.log("jest gra");
+        delete pairing[user]
+        res.send({is_set: true})
     }
     else {
-        console.log("NOT NULL");
-        res.send({is_set: true, var: global_var})
-        global_var = null;
+        console.log("nie ma gry jeszcze");
+        res.send({is_set: false})
     }
 });
-
 
 
 app.listen(PORT, HOST);

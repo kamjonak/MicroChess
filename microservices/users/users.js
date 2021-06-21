@@ -46,11 +46,11 @@ const User = users_db.model("User", UserSchema);
 
 
 app.post('/login', (req, res) => {
-    console.log('received data from front');
+    // console.log('received data from front');
     var name = req.body.name;
     var password = req.body.password;
-    console.log(name);
-    console.log(password);
+    // console.log(name);
+    // console.log(password);
 
     User.findOne({username: name, password: password}, function (err, user) {
         if (err || user == null)
@@ -61,17 +61,17 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-    console.log('received data from front');
+    // console.log('received data from front');
     var name = req.body.name;
     var password = req.body.password;
-    console.log(name);
-    console.log(password);
+    // console.log(name);
+    // console.log(password);
 
     var user = new User({username: name, password: password});
     user.save(function (err, fluffy) {
         if (err) 
             res.send("error");
-        console.log("orrrroo");
+        // console.log("orrrroo");
         res.send("ok");
     });
 });

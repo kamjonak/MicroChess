@@ -20,7 +20,7 @@ function connect_to_rabbit() {
                 if (error1) {
                     throw error1;
                 }
-                var queue = 'hello';
+                var queue = 'matchmakingQueue';
             
                 channel.assertQueue(queue, {
                     durable: false
@@ -58,6 +58,32 @@ router.get('/test',ensureAuthenticated,(req,res)=>{
     });
 })
 
+function await_game_info(req, res) {
+    axios
+        .post('http://game_server:9002/get_match/', {
+            player: req.session.passport.user
+        })
+        .then(function (response) {
+            console.log(response.data);
+            if (response.data.status == 0) {
+                console.log("found game params")
+                res.render('play', response.data.match);
+            }
+            else
+                setTimeout(await_game_info, 1000, req, res);
+        })
+        .catch(function (error) {
+            console.log("error");
+            res.send("error");
+        }); 
+}
+
+router.get('/play',ensureAuthenticated,(req,res)=>{
+    console.log(req.session.passport.user);
+
+    await_game_info(req, res)
+})
+
 // router.get('/find_game',ensureAuthenticated,(req,res)=>{
 //     send_channel.sendToQueue("hello", Buffer.from(counter.toString()));
 //     counter += 1;
@@ -70,22 +96,26 @@ router.get('/test',ensureAuthenticated,(req,res)=>{
 
 
 
-router.get('/send_rabbit',ensureAuthenticated,(req,res)=>{
-    send_channel.sendToQueue("hello", Buffer.from(counter.toString()));
-    counter += 1;
-    console.log("sent message to channel");
-    res.send("ok");
-})
+// router.get('/send_rabbit',ensureAuthenticated,(req,res)=>{
+//     send_channel.sendToQueue("hello", Buffer.from(counter.toString()));
+//     counter += 1;
+//     console.log("sent message to channel");
+//     res.send("ok");
+// })
 
-function await_game(res) {
+function await_game(req, res) {
     axios
-        .get('http://matchmaking_server:9001/get_var/', {})
+        .post('http://matchmaking_server:9001/get_match/', {
+            user: req.session.passport.user
+        })
         .then(function (response) {
             console.log(response.data);
-            if (response.data.is_set)
-                res.send(response.data.var.toString());
+            if (response.data.is_set) {
+                console.log("game found!")
+                res.send("ok");
+            }
             else
-                setTimeout(await_game, 50, res);
+                setTimeout(await_game, 1000, req, res);
         })
         .catch(function (error) {
             console.log("error");
@@ -93,9 +123,15 @@ function await_game(res) {
         }); 
 }
 
-router.get('/receive_rabbit',ensureAuthenticated,(req,res)=>{
-    console.log("RECEIVE RABBIT");
-    await_game(res);
+// router.get('/receive_rabbit',ensureAuthenticated,(req,res)=>{
+//     console.log("RECEIVE RABBIT");
+//     await_game(res);
+// })
+
+router.get('/find_game',ensureAuthenticated,(req,res)=>{
+    send_channel.sendToQueue("matchmakingQueue", Buffer.from(req.session.passport.user));
+    console.log("sent message to channel");
+    await_game(req, res);
 })
 
 module.exports = router; 
