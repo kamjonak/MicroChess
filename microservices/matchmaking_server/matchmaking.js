@@ -47,8 +47,6 @@ function connect_to_rabbit() {
                         last = msg.content.toString()
                     }
                     else {
-                        pairing[last] = {opponent: msg.content.toString(), color: 'white'}
-                        pairing[msg.content.toString()] = {opponent: last, color: 'black'}
                         let last_cp = last
                         last = null
                         // TODO: info do game server
@@ -58,12 +56,20 @@ function connect_to_rabbit() {
                                 player2: last_cp
                             })
                             .then(function (response) {
+                                console.log("text");
                                 console.log(response.data);
-                                res.send("ok")
+
+                                if (response.data.status == 0) {
+                                    pairing[last_cp] = {status: 0, opponent: msg.content.toString(), color: 'white'};
+                                    pairing[msg.content.toString()] = {status: 0, opponent: last, color: 'black'};
+                                }
+                                else {
+                                    pairing[last_cp] = {status: 1};
+                                    pairing[msg.content.toString()] = {status: 1};
+                                }
                             })
                             .catch(function (error) {
                                 console.log("error");
-                                res.send("error");
                             });
                     }
                   }, {
@@ -90,12 +96,18 @@ app.post('/get_match', (req, res) => {
     console.log(last)
     if(user in pairing) {
         console.log("jest gra");
-        delete pairing[user]
-        res.send({is_set: true})
+        if (pairing[user].status == 0) {
+            delete pairing[user]
+            res.send({status: 0})
+        }
+        else {
+            delete pairing[user]
+            res.send({status: 1})
+        }
     }
     else {
         console.log("nie ma gry jeszcze");
-        res.send({is_set: false})
+        res.send({status: 2})
     }
 });
 

@@ -7,6 +7,8 @@ var amqp = require('amqplib/callback_api');
 var send_channel;
 var counter = 0;
 
+var resend_querry = 1000;
+
 
 function connect_to_rabbit() {
     amqp.connect('amqp://matchmaking_queue', function(error0, connection){
@@ -58,30 +60,11 @@ router.get('/test',ensureAuthenticated,(req,res)=>{
     });
 })
 
-function await_game_info(req, res) {
-    axios
-        .post('http://game_server:9002/get_match/', {
-            player: req.session.passport.user
-        })
-        .then(function (response) {
-            console.log(response.data);
-            if (response.data.status == 0) {
-                console.log("found game params")
-                res.render('play', response.data.match);
-            }
-            else
-                setTimeout(await_game_info, 20, req, res);
-        })
-        .catch(function (error) {
-            console.log("error");
-            res.send("error");
-        }); 
-}
 
 router.get('/play',ensureAuthenticated,(req,res)=>{
     console.log(req.session.passport.user);
 
-    await_game_info(req, res)
+    res.render('play');
 })
 
 
@@ -92,37 +75,19 @@ function await_game(req, res) {
         })
         .then(function (response) {
             console.log(response.data);
-            if (response.data.is_set) {
-                console.log("game found!")
-                res.send("ok");
-            }
-            else
-                setTimeout(await_game, 20, req, res);
-        })
-        .catch(function (error) {
-            console.log("error");
-            res.send("error");
-        }); 
-}
-
-function await_get_board_state(req, res) {
-    axios
-        .post('http://game_server:9002/get_board_state/', {
-            player: req.session.passport.user
-        })
-        .then(function (response) {
-            console.log(response.data);
             if (response.data.status == 0) {
-                console.log("got board state!")
-                console.log(response.data.new_state)
-                res.send(response.data.new_state);
+                console.log("game found!")
+                res.send({status: 0});
+            }
+            else if (response.data.status == 1) {
+                res.send({status: 1});
             }
             else
-                setTimeout(await_get_board_state, 20, req, res);
+                setTimeout(await_game, resend_querry, req, res);
         })
         .catch(function (error) {
-            console.log("error");
-            res.send("error");
+            console.log("error await game");
+            res.send("error await game");
         }); 
 }
 
@@ -132,9 +97,60 @@ router.get('/find_game',ensureAuthenticated,(req,res)=>{
     await_game(req, res);
 })
 
+function get_initial_board_state(req, res) {
+    axios
+        .post('http://game_server:9002/get_board_state/', {
+            player: req.session.passport.user
+        })
+        .then(function (response) {
+            console.log(response.data);
+            console.log("got board state!")
+            res.send(response.data);
+        })
+        .catch(function (error) {
+            console.log("error initial board state");
+            res.send("error initial board state");
+        }); 
+}
+
+router.get('/get_initial_board_state',ensureAuthenticated,(req,res)=>{
+    console.log('getting initial board state')
+
+    setTimeout(get_initial_board_state, resend_querry, req, res);
+})
+
+function get_board_state(req, res) {
+    axios
+        .post('http://game_server:9002/get_board_state/', {
+            player: req.session.passport.user
+        })
+        .then(function (response) {
+
+            console.log("get board response");
+            console.log(response.data);
+            if (response.data.status != 0) {
+                res.send(response.data);
+                return;
+            }
+
+            if (response.data.color != response.data.turn) {
+                setTimeout(get_board_state, resend_querry, req, res);
+            }
+            else {
+                console.log(response.data);
+                console.log("got board state!");
+                res.send(response.data);
+            }
+        })
+        .catch(function (error) {
+            console.log("error board state");
+            res.send("error board state");
+        }); 
+}
+
 router.get('/get_board_state',ensureAuthenticated,(req,res)=>{
     console.log('getting board state')
-    await_get_board_state(req, res)
+    get_board_state(req, res);
 })
 
 router.post('/update_board_state',ensureAuthenticated,(req,res)=>{
@@ -151,8 +167,8 @@ router.post('/update_board_state',ensureAuthenticated,(req,res)=>{
             res.send(response.data);
         })
         .catch(function (error) {
-            console.log("error");
-            res.send("error");
+            console.log("error update");
+            res.send("error update");
         }); 
 })
 

@@ -1,9 +1,59 @@
-
+var my_color = null;
+var opponent = null;
 var board = null
 var game = new Chess()
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
+
+
+function initiate_board() {
+  var url = "/get_initial_board_state";
+  // alert("i want to get it!")
+  $.ajax({
+      url: url,
+      success: function(data) {
+        if (data.status == 1) {
+          alert("something went wrong")
+          window.location.replace('/test');
+        }
+        else if (data.status == 2) {
+          alert("game timeouted");
+          window.location.replace('/test');
+        }
+
+        my_color = data.color;
+        opponent = data.opponent;
+
+        if (data.move == my_color)
+          enable_moving();
+        
+        
+        game.load(data.fen);
+
+        var config = {
+          draggable: true,
+          position: game.fen(),
+          orientation: my_color,
+          onDragStart: onDragStart,
+          onDrop: onDrop,
+          onSnapEnd: onSnapEnd
+        }
+        board = Chessboard('myBoard', config);
+
+        onSnapEnd();
+        updateStatus();
+
+        if (data.move != my_color)
+          get_next_board_state();
+      }, 
+      error: function(xhr, status, error) {
+          alert(xhr.responseText);
+      }
+  });
+}
+
+initiate_board();
 
 function restart() {
     game.reset();
@@ -17,8 +67,7 @@ function onDragStart (source, piece, position, orientation) {
   if (game.game_over()) return false
 
   // only pick up pieces for the side to move
-  if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+  if ((my_color == 'white' && piece.search(/^b/) !== -1) || (my_color == 'black' && piece.search(/^w/) !== -1)) {
     return false
   }
 }
@@ -34,13 +83,13 @@ function onDrop (source, target, update=true) {
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   })
 
-  if (update && !game.game_over())
+  if (update && !game.game_over() && source != target)
     update_board_state(source, target)
 
   // illegal move
   if (move === null) return 'snapback'
 
-  updateStatus()
+  updateStatus();
 }
 
 // update the board position after the piece snap
@@ -82,15 +131,7 @@ function updateStatus () {
   $pgn.html(game.pgn())
 }
 
-var config = {
-  draggable: true,
-  position: 'start',
-  orientation: my_color,
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onSnapEnd: onSnapEnd
-}
-board = Chessboard('myBoard', config);
+
 
 updateStatus();
 
@@ -103,7 +144,7 @@ function disable_moving() {
 }
 
 function enable_moving() {
- moves_disabled = false
+  moves_disabled = false
 }
 
 function get_next_board_state() {
@@ -112,10 +153,22 @@ function get_next_board_state() {
   $.ajax({
       url: url,
       success: function(data) {
-        // alert("zajebiscie, mam nowy board state")
-        enable_moving()
-        onDrop(data.source, data.target, false)
-        onSnapEnd()
+        if (data.status == 1) {
+          alert("something went wrong")
+          //window.location.replace('/test');
+        }
+        else if (data.status == 2) {
+          alert("game timeouted");
+          //window.location.replace('/test');
+        }
+
+        if (data.move == my_color)
+          enable_moving();
+        
+        
+        game.load(data.fen);
+        onSnapEnd();
+        updateStatus();
       }, 
       error: function(xhr, status, error) {
           alert(xhr.responseText);
@@ -141,11 +194,4 @@ function update_board_state(source, target) {
   });
 }
 
-function initiate_board() {
-  if (my_color == 'black')  {
-    moves_disabled = true;
-    get_next_board_state()
-  }
-}
 
-initiate_board()

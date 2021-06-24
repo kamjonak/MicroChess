@@ -3,6 +3,7 @@
 const express = require('express');
 var cors = require('cors');
 var amqp = require('amqplib/callback_api');
+const { Chess } = require('chess.js');
 
 // Constants
 const PORT = 9002;
@@ -10,72 +11,81 @@ const HOST = '0.0.0.0';
 
 // App
 const app = express();
-app.use(express.json());       // to support JSON-encoded bodies
-app.use(express.urlencoded({     // to support URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({
   extended: true
 })); 
 
+const game_timeout = 10000;
+
+var player_game = {}
+
 app.use(cors())
 
-var match = {}
-var last_opponents_move = {}
-
-app.get('/', (req, res) => {
-    console.log("jestem tutaj sb");
-});
-
 app.post('/create_match', (req, res) => {
-    console.log("game creating");
-    let p1 = req.body.player1
-    let p2 = req.body.player2
-    console.log("players: " + p1 + " | " + p2)
-    match[p1] = {opponent: p2, color: "white"}
-    match[p2] = {opponent: p1, color: "black"}
-    last_opponents_move[p1] = null
-    last_opponents_move[p2] = null
-});
+    var player1 = req.body.player1;
+    var player2 = req.body.player2;
+    console.log("creating match for " + player1 + " " + player2);
 
-app.post('/get_match', (req, res) => {
-    console.log("getting game");
+    var date = Date.now()
+
+    console.log("current date" + date.toString());
+
+    if(player1 in player_game && Math.abs(player_game[player1].last_move_time - date) > game_timeout)
+        delete player_game[player1];
     
-    let player = req.body.player
-    if (player in match) {
-        res.send({status: 0, match: match[player]})
+    if(player2 in player_game && Math.abs(player_game[player2].last_move_time - date) > game_timeout)
+        delete player_game[player2];
+
+    console.log("after player check");
+
+    if (player1 in player_game || player2 in player_game) {
+        res.send({status:1});
     }
     else {
-        res.send({status: 1})
+        var game = new Chess();
+        var game_state = {
+            game: game, 
+            w_player: req.body.player1, 
+            b_player: req.body.player2,
+            last_move_time: date
+        }
+        player_game[player1] = game_state;
+        player_game[player2] = game_state;
+
+        res.send({status: 0});
     }
 });
 
 app.post('/get_board_state', (req, res) => {
-    console.log("getting board state");
+    let player = req.body.player;
+    if (!(player in player_game)) {
+        res.send({status: 1});
+        return;
+    }
 
-    let player = req.body.player
-    console.log(player)
-    console.log(last_opponents_move[player])
-    if (last_opponents_move[player] == null) {
-        res.send({status: 1})
+    let game_info = player_game[player];
+    let date = Date.now();
+
+    if (Math.abs(date - game_info.last_move_time) > game_timeout) {
+        delete player_game[player];
+        res.send({status: 2});
     }
     else {
-        let last_move = last_opponents_move[player]
-        last_opponents_move[player] = null
-        res.send({status: 0, new_state: last_move})
+        let [opponent, color] = ((player == game_info.w_player) ? [game_info.b_player, 'white'] : [game_info.w_player, 'black']);
+
+        res.send({
+            status: 0, 
+            opponent: opponent, 
+            color: color, 
+            fen: game_info.game.fen(), 
+            move: ((game_info.game.turn() == 'w') ? 'white' : 'black')
+        })
     }
 });
 
 app.post('/update_board_state', (req, res) => {
-    console.log("updating game");
-
-    let player = req.body.player
-    let new_state = {source: req.body.source, target: req.body.target}
-
-    console.log(new_state)
-    console.log(player)
-    console.log(match[player].opponent)
-    console.log(last_opponents_move[match[player].opponent])
-    last_opponents_move[match[player].opponent] = new_state
-    console.log(last_opponents_move[match[player].opponent])
-    res.send("ok")
+    
 });
 
 

@@ -68,7 +68,7 @@ services:
       - 9002:9002
     volumes:
       - ./game_server:/game_server
-    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express express-session express-ejs-layouts cors ejs axios amqplib && node game_server/game_server.js"
+    command: bash -c "npm install chess.js body-parser express express-session express-ejs-layouts cors ejs axios amqplib && node game_server/game_server.js"
     container_name: game_server
     networks: 
       - relations-1
