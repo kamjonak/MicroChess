@@ -5,8 +5,6 @@ var cors = require('cors');
 var amqp = require('amqplib/callback_api');
 const axios = require('axios');
 
-var global_var = null;
-
 // Constants
 const PORT = 9001;
 const HOST = '0.0.0.0';

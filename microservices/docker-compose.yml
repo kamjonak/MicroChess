@@ -73,5 +73,29 @@ services:
     networks: 
       - relations-1
 
+  match_history:
+    image: node:14
+    ports:
+      - 9003:9003
+    volumes:
+      - ./match_history:/match_history
+    networks:
+      - relations-1
+    command: bash -c "npm install body-parser express cors axios amqplib mongoose && node match_history/match_history.js"
+    depends_on:
+      - match_history_db
+    container_name: match_history
+
+  match_history_db:
+    image: mongo:latest
+    volumes:
+      - ./history_data:/data/db
+    ports: 
+      - 27018:27017
+    networks:
+      - relations-1
+    # command: mongod --quiet --logpath /dev/null
+    container_name: match_history_db
+
 networks:
     relations-1:

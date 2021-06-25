@@ -5,9 +5,8 @@ const axios = require('axios');
 
 var amqp = require('amqplib/callback_api');
 var send_channel;
-var counter = 0;
 
-var resend_querry = 1000;
+var resend_querry = 10;
 
 
 function connect_to_rabbit() {
@@ -37,6 +36,22 @@ function connect_to_rabbit() {
 
 connect_to_rabbit();
 
+function check_if_active_game(req, res, fun) {
+    axios
+        .post('http://game_server:9002/check_active_game/', {
+            player: req.session.passport.user
+        })
+        .then(function (response) {
+            if (response.data.status == 0)
+                res.redirect('play')
+            else
+                fun(req, res)
+        })
+        .catch(function (error) {
+            console.log("error check if active game");
+            res.send("check if active game");
+        }); 
+}
 
 router.get('/', (req,res)=>{
     res.render('welcome');
@@ -47,23 +62,41 @@ router.get('/register', (req,res)=>{
 })
 
 router.get('/dashboard',ensureAuthenticated,(req,res)=>{
-    console.log(req.session.passport.user);
-    res.render('dashboard',{
-        user: req.user
-    });
+    check_if_active_game(req, res, function (req, res) {
+        res.render('dashboard',{
+            user: req.session.passport.user
+        });
+    })
 })
 
 router.get('/test',ensureAuthenticated,(req,res)=>{
-    console.log(req.session.passport.user);
-    res.render('index',{
-        user: req.user
-    });
+    check_if_active_game(req, res, function (req, res) {
+        res.render('index',{
+            user: req.session.passport.user
+        });
+    })
 })
 
+router.get('/profile',ensureAuthenticated,(req,res)=>{
+    check_if_active_game(req, res, function (req, res) {
+        axios
+            .post('http://match_history:9003/get_match_history/', {
+                player: req.session.passport.user
+            })
+            .then(function (response) {
+                res.render('profile',{
+                    user: req.session.passport.user,
+                    //history: response.data
+                });
+            })
+            .catch(function (error) {
+                console.log("error check if active game");
+                res.send("check if active game");
+            }); 
+    })
+})
 
-router.get('/play',ensureAuthenticated,(req,res)=>{
-    console.log(req.session.passport.user);
-
+router.get('/play',ensureAuthenticated,(req,res)=> {
     res.render('play');
 })
 
@@ -116,7 +149,7 @@ function get_initial_board_state(req, res) {
 router.get('/get_initial_board_state',ensureAuthenticated,(req,res)=>{
     console.log('getting initial board state')
 
-    setTimeout(get_initial_board_state, resend_querry, req, res);
+    setTimeout(get_initial_board_state, 100, req, res);
 })
 
 function get_board_state(req, res) {
@@ -133,7 +166,7 @@ function get_board_state(req, res) {
                 return;
             }
 
-            if (response.data.color != response.data.turn) {
+            if (response.data.color != response.data.move) {
                 setTimeout(get_board_state, resend_querry, req, res);
             }
             else {

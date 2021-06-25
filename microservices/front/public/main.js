@@ -1,6 +1,7 @@
 var my_color = null;
 var opponent = null;
 var board = null
+var moves_disabled = true;
 var game = new Chess()
 var $status = $('#status')
 var $fen = $('#fen')
@@ -60,8 +61,6 @@ function restart() {
     board.start();
 }
 
-var moves_disabled = false;
-
 function onDragStart (source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
@@ -72,7 +71,7 @@ function onDragStart (source, piece, position, orientation) {
   }
 }
 
-function onDrop (source, target, update=true) {
+function onDrop (source, target) {
   // see if the move is legal
 
   if (moves_disabled) return 'snapback'
@@ -83,11 +82,11 @@ function onDrop (source, target, update=true) {
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   })
 
-  if (update && !game.game_over() && source != target)
-    update_board_state(source, target)
-
   // illegal move
   if (move === null) return 'snapback'
+
+  if (source != target)
+    update_board_state(source, target)
 
   updateStatus();
 }
@@ -158,17 +157,24 @@ function get_next_board_state() {
           //window.location.replace('/test');
         }
         else if (data.status == 2) {
-          alert("game timeouted");
+          alert("Game timeouted, " + data.winner + " won!");
           //window.location.replace('/test');
         }
 
         if (data.move == my_color)
           enable_moving();
+        else 
+          disable_moving()
         
-        
+        // $fen = data.fen
         game.load(data.fen);
         onSnapEnd();
         updateStatus();
+
+        if (data.game_state != 'undecided') {
+          alert(data.game_state)
+          disable_moving()
+        }
       }, 
       error: function(xhr, status, error) {
           alert(xhr.responseText);
@@ -184,9 +190,29 @@ function update_board_state(source, target) {
       type: "POST",
       data: {source: source, target: target},
       success: function(data) {
-        // alert(data)
-        // alert("no dobra updated")
-        get_next_board_state();
+        if (data.status == 0) {
+          if (data.game_state == 'undecided')
+            get_next_board_state();
+          else
+            alert(data.game_state)
+        }
+        else if (data.status == 1) {
+          alert("something went wrong")
+        }
+        else if (data.status == 2) {
+          alert("Game timeouted, " + data.winner + " won!");
+        }
+        else if (data.status == 3) {
+          alert("status 3")
+          if (data.move == my_color)
+            enable_moving()
+          else
+            disable_moving()
+
+          game.load(data.fen)
+          onSnapEnd();
+          updateStatus();
+        }
       }, 
       error: function(xhr, status, error) {
           alert(xhr.responseText);
