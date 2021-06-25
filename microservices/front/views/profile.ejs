@@ -13,6 +13,22 @@
 
 <body>
   <p> Welcome <%= user %></p>
-  
+  <span> Your stats: </span>
+    <ul>
+      <li>Wins: <%= stats.wins%></li>
+      <li>Loses: <%= stats.loses%></li>
+      <li>Games Played: <%= stats.games_played%></li>
+    </ul>
+  <br>
+  <ul>
+    <% history.forEach(function(item,index){ %>
+    <ul> game vs <%= item.opponent %>
+          <li> <%= item.pgn %> </li>
+          <li> <%= item.game_state %> </li>
+    </ul>
+    <br>
+    <% }) %>
+  </ul>
+
 </body>
 </html>

@@ -39,7 +39,10 @@ connectToDb();
 
 let UserSchema = new users_db.Schema({
     username: String,
-    password: String
+    password: String,
+    wins: Number,
+    loses: Number,
+    games_played: Number,
 });
 
 const User = users_db.model("User", UserSchema);
@@ -67,7 +70,7 @@ app.post('/register', (req, res) => {
     // console.log(name);
     // console.log(password);
 
-    var user = new User({username: name, password: password});
+    var user = new User({username: name, password: password, wins: 0, loses: 0, games_played: 0});
     user.save(function (err, fluffy) {
         if (err) 
             res.send("error");
@@ -87,6 +90,35 @@ app.post('/getUserById', (req, res) => {
         else
             res.send({id: 1, name: user.username});
     });
+});
+
+app.post('/get_stats', (req, res) => {
+    var player = req.body.player;
+
+    User.findOne({username: player}, function (err, user) {
+        res.send({wins: user.wins, loses: user.loses, games_played: user.games_played});
+    });
+});
+
+app.post('/player_ended_game', (req, res) => {
+    console.log('received data from front');
+    var player = req.body.player;
+    var match_result = req.body.result;
+
+    User.findOne({username: player}, function (err, user) {
+        let wins = user.wins;
+        let loses = user.loses;
+        let games_played = user.games_played;
+
+        if (match_result == 'win')
+            User.findOneAndUpdate({username: player}, {wins: wins + 1, games_played: games_played + 1});
+        else if (match_result == 'loss')
+            User.findOneAndUpdate({username: player}, {loses: loses + 1, games_played: games_played + 1});
+        else
+            User.findOneAndUpdate({username: player}, {games_played: games_played + 1});
+    });
+
+    res.send("ok");
 });
 
 app.post('/read', (req, res) => {

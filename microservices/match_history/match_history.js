@@ -3,6 +3,8 @@
 const express = require('express');
 var cors = require('cors');
 const users_db = require('mongoose');
+var amqp = require('amqplib/callback_api');
+const axios = require('axios');
 
 // Constants
 const PORT = 9003;
@@ -15,7 +17,7 @@ app.use(express.urlencoded({
   extended: true
 })); 
 
-app.use(cors())
+app.use(cors());
 
 const options = {
     autoIndex: false, // Don't build indexes
@@ -41,20 +43,68 @@ let GameSchema = new users_db.Schema({
     player: String,
     opponent: String,
     color: String,
-    won: Boolean,
+    game_state: String,
     pgn: String,
     date: String
 });
 
 const Game = users_db.model("Game", GameSchema);
 
+function connect_to_rabbit() {
+    amqp.connect('amqp://match_history_queue', function(error0, connection){
+        if (error0) {
+            console.log("unsuccessful rabbit connection");
+            setTimeout(connect_to_rabbit, 5000);
+        }
+        else {
+            console.log("rabbit connected");
+            connection.createChannel(function(error1, channel) {
+                if (error1) {
+                    throw error1;
+                }
+                var queue = 'games_to_analyze_queue';
+            
+                channel.assertQueue(queue, {
+                    durable: false
+                });
+
+                channel.consume(queue, function(msg) {
+                    let game_info = msg.content;
+                    console.log(" [x] Received %s", msg.content.toString());
+                    let game = new Game(JSON.parse(game_info.toString()));
+                    game.save();
+
+                    let game_result = (game_info.color == game_info.game_state ? 'won' : (game_info.game_state == 'draw' ? 'draw' : 'loss'));
+
+                    axios
+                        .post('http://users:9000/player_ended_game/', {
+                            player: msg.content.player,
+                            result: game_result
+                        })
+                        .then(function (response) {
+                        })
+                        .catch(function (error) {
+                            console.log("ERROR IN PLAYER ENDED GAME");
+                        }); 
+                }, 
+                {
+                      noAck: true
+                });
+            });
+
+        }
+    });
+}
+
+connect_to_rabbit();
+
 app.post('/get_match_history', (req, res) => {
     let player = req.body.player
 
     Game.find({player: player}, function (err, games) {
-        console.log(games)
+        console.log(games);
+        res.send(games);
     });
-    res.send('ok')
 });
 
 app.listen(PORT, HOST);
