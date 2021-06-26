@@ -84,10 +84,23 @@ router.get('/profile',ensureAuthenticated,(req,res)=>{
                 player: req.session.passport.user
             })
             .then(function (response) {
-                res.render('profile',{
-                    user: req.session.passport.user,
-                    //history: response.data
-                });
+
+                var history = response.data;
+                axios
+                    .post('http://users:9000/get_stats', {
+                        player: req.session.passport.user
+                    })
+                    .then(function (response) {
+                        res.render('profile',{
+                            user: req.session.passport.user,
+                            history: history,
+                            stats: response.data
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log("error check if active game");
+                        res.send("check if active game");
+                    }); 
             })
             .catch(function (error) {
                 console.log("error check if active game");

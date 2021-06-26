@@ -5,6 +5,8 @@ var cors = require('cors');
 var amqp = require('amqplib/callback_api');
 const { Chess } = require('chess.js');
 
+var send_channel;
+
 // Constants
 const PORT = 9002;
 const HOST = '0.0.0.0';
@@ -20,7 +22,35 @@ const game_timeout = 40000;
 
 var player_game = {}
 
-app.use(cors())
+app.use(cors());
+
+
+function connect_to_rabbit() {
+    amqp.connect('amqp://match_history_queue', function(error0, connection){
+        if (error0) {
+            console.log("unsuccessful rabbit connection");
+            setTimeout(connect_to_rabbit, 5000);
+        }
+        else {
+            console.log("rabbit connected");
+            connection.createChannel(function(error1, channel) {
+                if (error1) {
+                    throw error1;
+                }
+                var queue = 'matchmakingQueue';
+            
+                channel.assertQueue(queue, {
+                    durable: false
+                });
+                send_channel = channel;
+               // channel.sendToQueue(queue, Buffer.from(msg));
+                //console.log(" [x] Sent %s", msg);
+            });
+        }
+    });
+}
+
+connect_to_rabbit();
 
 function calculate_game_state(game) {
     if (game.in_checkmate())
@@ -38,8 +68,19 @@ function get_game_info(player, status) {
     console.log(game_state)
 
     if (game_state != 'undecided') {
+
+        let game_to_send = {
+            player: player,
+            opponent: opponent,
+            color: color,
+            game_state: game_state,
+            pgn: game_info.game.pgn(),
+            date: Date.now()
+        }
+        
+        send_channel.sendToQueue("games_to_analyze_queue", Buffer.from(JSON.stringify(game_to_send)));
+
         delete player_game[player];
-        // TODO: send info to match history
     }
 
     return {
