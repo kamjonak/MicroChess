@@ -69,16 +69,20 @@ function connect_to_rabbit() {
                 });
 
                 channel.consume(queue, function(msg) {
-                    let game_info = msg.content;
-                    console.log(" [x] Received %s", msg.content.toString());
-                    let game = new Game(JSON.parse(game_info.toString()));
+                    let game_info = JSON.parse(msg.content.toString());
+                    console.log(" [x] Received %s", game_info);
+                    let game = new Game(game_info);
                     game.save();
 
-                    let game_result = (game_info.color == game_info.game_state ? 'won' : (game_info.game_state == 'draw' ? 'draw' : 'loss'));
+                    let game_result = (game_info.color == game_info.game_state ? 'win' : (game_info.game_state == 'draw' ? 'draw' : 'loss'));
+
+
+                    console.log(game_info.player);
+                    console.log(game_result);
 
                     axios
                         .post('http://users:9000/player_ended_game/', {
-                            player: msg.content.player,
+                            player: game_info.player,
                             result: game_result
                         })
                         .then(function (response) {

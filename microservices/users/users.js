@@ -101,21 +101,33 @@ app.post('/get_stats', (req, res) => {
 });
 
 app.post('/player_ended_game', (req, res) => {
-    console.log('received data from front');
+    console.log('received data from match history');
     var player = req.body.player;
     var match_result = req.body.result;
+
+    console.log(player);
 
     User.findOne({username: player}, function (err, user) {
         let wins = user.wins;
         let loses = user.loses;
         let games_played = user.games_played;
 
-        if (match_result == 'win')
-            User.findOneAndUpdate({username: player}, {wins: wins + 1, games_played: games_played + 1});
-        else if (match_result == 'loss')
-            User.findOneAndUpdate({username: player}, {loses: loses + 1, games_played: games_played + 1});
-        else
-            User.findOneAndUpdate({username: player}, {games_played: games_played + 1});
+        console.log("found user:");
+        console.log(user);
+
+        if (match_result == 'win') {
+            user.wins++;//User.findOneAndUpdate({username: player}, {wins: wins + 1, games_played: games_played + 1});
+            user.games_played++;
+        }
+        else if (match_result == 'loss') {
+            user.loses++;//User.findOneAndUpdate({username: player}, {loses: loses + 1, games_played: games_played + 1});
+            user.games_played++;
+        }
+        else {
+            user.games_played++;//User.findOneAndUpdate({username: player}, {games_played: games_played + 1});
+        }
+
+        user.save();
     });
 
     res.send("ok");
