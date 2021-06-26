@@ -138,6 +138,19 @@ function go_back() {
   window.location.replace('/test')
 }
 
+function surrender() {
+  let url = '/surrender';
+  $.ajax({
+    url: url,
+    success: function(data) {
+      alert("you surrendered");
+    }, 
+    error: function(xhr, status, error) {
+        alert(xhr.responseText);
+    }
+});
+}
+
 function disable_moving() {
   moves_disabled = true
 }

@@ -116,15 +116,15 @@ app.post('/player_ended_game', (req, res) => {
         console.log(user);
 
         if (match_result == 'win') {
-            user.wins++;//User.findOneAndUpdate({username: player}, {wins: wins + 1, games_played: games_played + 1});
+            user.wins++;
             user.games_played++;
         }
         else if (match_result == 'loss') {
-            user.loses++;//User.findOneAndUpdate({username: player}, {loses: loses + 1, games_played: games_played + 1});
+            user.loses++;
             user.games_played++;
         }
         else {
-            user.games_played++;//User.findOneAndUpdate({username: player}, {games_played: games_played + 1});
+            user.games_played++;
         }
 
         user.save();

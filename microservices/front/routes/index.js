@@ -63,14 +63,6 @@ router.get('/register', (req,res)=>{
 
 router.get('/dashboard',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
-        res.render('dashboard',{
-            user: req.session.passport.user
-        });
-    })
-})
-
-router.get('/test',ensureAuthenticated,(req,res)=>{
-    check_if_active_game(req, res, function (req, res) {
         res.render('index',{
             user: req.session.passport.user
         });
@@ -165,6 +157,22 @@ router.get('/get_initial_board_state',ensureAuthenticated,(req,res)=>{
     setTimeout(get_initial_board_state, 100, req, res);
 })
 
+router.get('/surrender',ensureAuthenticated,(req,res)=>{
+    console.log('surrender')
+
+    axios
+        .post('http://game_server:9002/surrender/', {
+            player: req.session.passport.user
+        })
+        .then(function (response) {
+            res.send(response.data);
+        })
+        .catch(function (error) {
+            console.log("error surrender");
+            res.send("error surrender");
+        }); 
+})
+
 function get_board_state(req, res) {
     axios
         .post('http://game_server:9002/get_board_state/', {
@@ -179,7 +187,7 @@ function get_board_state(req, res) {
                 return;
             }
 
-            if (response.data.color != response.data.move) {
+            if (response.data.game_state == 'undecided' && response.data.color != response.data.move) {
                 setTimeout(get_board_state, resend_querry, req, res);
             }
             else {

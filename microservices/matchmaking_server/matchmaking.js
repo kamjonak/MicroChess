@@ -41,13 +41,16 @@ function connect_to_rabbit() {
 
                 channel.consume(queue, function(msg) {
                     console.log(" [x] Received %s", msg.content.toString());
+                    if (msg.content.toString() == last || msg.content.toString() in pairing)
+                        return;
+
                     if (last == null) {
                         last = msg.content.toString()
                     }
                     else {
                         let last_cp = last
                         last = null
-                        // TODO: info do game server
+
                         axios
                             .post('http://game_server:9002/create_match/', {
                                 player1: msg.content.toString(),

@@ -63,9 +63,9 @@ function calculate_game_state(game) {
 function get_game_info(player, status) {
     let game_info = player_game[player];
     let [opponent, color] = ((player == game_info.w_player) ? [game_info.b_player, 'white'] : [game_info.w_player, 'black']);
-    let game_state = calculate_game_state(game_info.game)
+    let game_state = (game_info.game_status == 'undecided' ? calculate_game_state(game_info.game) : game_info.game_status);
 
-    console.log(game_state)
+    console.log(game_state + ' ' + player);
 
     if (game_state != 'undecided') {
 
@@ -119,7 +119,8 @@ app.post('/create_match', (req, res) => {
             game: game, 
             w_player: req.body.player1, 
             b_player: req.body.player2,
-            last_move_time: date
+            last_move_time: date,
+            game_status: 'undecided'
         }
         player_game[player1] = game_state;
         player_game[player2] = game_state;
@@ -131,6 +132,7 @@ app.post('/create_match', (req, res) => {
 app.post('/get_board_state', (req, res) => {
     let player = req.body.player;
     if (!(player in player_game)) {
+        console.log(" sb nie ma mnie");
         res.send({status: 1});
         return;
     }
@@ -161,6 +163,11 @@ app.post('/update_board_state', (req, res) => {
     }
     let game_info = player_game[player];
     let date = Date.now();
+
+    if (game_info.game_status != 'undecided') {
+        res.send(get_game_info(player, 0));
+    }
+
     if (Math.abs(date - game_info.last_move_time) > game_timeout) {
         let winner = (player_game[player].game.turn() == 'w' ? 'black' : 'white')
         delete player_game[player];
@@ -170,7 +177,7 @@ app.post('/update_board_state', (req, res) => {
     else {
         let [opponent, color] = ((player == game_info.w_player) ? [game_info.b_player, 'w'] : [game_info.w_player, 'b']);
 
-        if (game_info.game.turn() == color && game_info.game.move({from: source, to:target}) !== null) {
+        if (game_info.game.turn() == color && game_info.game.move({from: source, to:target, promotion: 'q'}) !== null) {
             game_info.last_move_time = Date.now()
             console.log("status = 0")
             res.send(get_game_info(player, 0))
@@ -189,6 +196,18 @@ app.post('/check_active_game', (req, res) => {
     else
         res.send({status: 1})
 });
+
+app.post('/surrender', (req, res) => {
+    let player = req.body.player;
+    console.log("surrender " + player);
+    if (player in player_game) {
+        player_game[player].game_status = (player == player_game[player].w_player ? 'black' : 'white');
+        res.send(get_game_info(player, 0));
+    }
+    else
+        res.send({status: 1});
+});
+
 
 
 app.listen(PORT, HOST);

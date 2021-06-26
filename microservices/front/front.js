@@ -46,38 +46,5 @@ app.use((req,res,next)=> {
 app.use('/',require('./routes/index'));
 app.use('/users',require('./routes/users'));
 
-// app.get('/send', (req, res) => {
-//     console.log('sending to middle');
-//     console.log(req.query.content);
-//     axios
-//         .post('http://middle:9000/send/', {
-//             query: req.query.content
-//         })
-//         .then(function (response) {
-//             console.log("response");
-//         })
-//         .catch(function (error) {
-//             console.log("error");
-//         }); 
-
-//     res.send('ok');
-// });
-
-// app.get('/read', (req, res) => {
-//     console.log('reading from middle');
-//     axios
-//         .post('http://middle:9000/read/', {
-//             query: req.query.content
-//         })
-//         .then(function (response) {
-//             console.log("response:");
-//             console.log(response.data);
-//             res.send(response.data);
-//         })
-//         .catch(function (error) {
-//             console.log("error");
-//         }); 
-// });
-
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
