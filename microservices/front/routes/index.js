@@ -10,7 +10,7 @@ var resend_querry = 10;
 
 
 function connect_to_rabbit() {
-    amqp.connect('amqp://matchmaking_queue', function(error0, connection){
+    amqp.connect('amqp://matchmaking-queue', function(error0, connection){
         if (error0) {
             console.log("unsuccessful rabbit connection");
             setTimeout(connect_to_rabbit, 5000);
@@ -38,7 +38,7 @@ connect_to_rabbit();
 
 function check_if_active_game(req, res, fun) {
     axios
-        .post('http://game_server:9002/check_active_game/', {
+        .post('http://game-server:9002/check_active_game/', {
             player: req.session.passport.user
         })
         .then(function (response) {
@@ -72,7 +72,7 @@ router.get('/dashboard',ensureAuthenticated,(req,res)=>{
 router.get('/profile',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
         axios
-            .post('http://match_history:9003/get_match_history/', {
+            .post('http://match-history:9003/get_match_history/', {
                 player: req.session.passport.user
             })
             .then(function (response) {
@@ -137,7 +137,7 @@ router.get('/find_game',ensureAuthenticated,(req,res)=>{
 
 function get_initial_board_state(req, res) {
     axios
-        .post('http://game_server:9002/get_board_state/', {
+        .post('http://game-server:9002/get_board_state/', {
             player: req.session.passport.user
         })
         .then(function (response) {
@@ -161,7 +161,7 @@ router.get('/surrender',ensureAuthenticated,(req,res)=>{
     console.log('surrender')
 
     axios
-        .post('http://game_server:9002/surrender/', {
+        .post('http://game-server:9002/surrender/', {
             player: req.session.passport.user
         })
         .then(function (response) {
@@ -175,7 +175,7 @@ router.get('/surrender',ensureAuthenticated,(req,res)=>{
 
 function get_board_state(req, res) {
     axios
-        .post('http://game_server:9002/get_board_state/', {
+        .post('http://game-server:9002/get_board_state/', {
             player: req.session.passport.user
         })
         .then(function (response) {
@@ -210,7 +210,7 @@ router.get('/get_board_state',ensureAuthenticated,(req,res)=>{
 router.post('/update_board_state',ensureAuthenticated,(req,res)=>{
     console.log("updating board state");
     axios
-        .post('http://game_server:9002/update_board_state/', {
+        .post('http://game-server:9002/update_board_state/', {
             player: req.session.passport.user,
             source: req.body.source,
             target: req.body.target

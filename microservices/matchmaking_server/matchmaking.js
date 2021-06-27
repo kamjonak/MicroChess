@@ -52,7 +52,7 @@ function connect_to_rabbit() {
                         last = null
 
                         axios
-                            .post('http://game_server:9002/create_match/', {
+                            .post('http://game-server:9002/create_match/', {
                                 player1: msg.content.toString(),
                                 player2: last_cp
                             })
