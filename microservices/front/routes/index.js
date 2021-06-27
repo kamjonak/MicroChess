@@ -108,7 +108,7 @@ router.get('/play',ensureAuthenticated,(req,res)=> {
 
 function await_game(req, res) {
     axios
-        .post('http://matchmaking_server:9001/get_match/', {
+        .post('http://matchmaking-server:9001/get_match/', {
             user: req.session.passport.user
         })
         .then(function (response) {
