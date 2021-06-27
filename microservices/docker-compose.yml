@@ -5,8 +5,8 @@ services:
     image: node:14
     ports:
       - 8002:80/tcp
-    volumes:
-      - ./front:/front
+    # volumes:
+    #   - ./front:/front
     command: bash -c "npm install @chrisoakman/chessboardjs body-parser express express-session express-ejs-layouts connect-flash passport passport-local cors ejs axios amqplib && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/front/front.js"
     container_name: front
     networks: 
@@ -20,8 +20,8 @@ services:
     image: node:14
     ports:
       - 9000:9000
-    volumes:
-      - ./users:/users
+    # volumes:
+    #   - ./users:/users
     networks:
       - relations-1
     command: bash -c "npm install body-parser express cors mongoose && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/users/users.js"
@@ -44,8 +44,8 @@ services:
     image: node:14
     ports:
       - 9001:9001
-    volumes:
-      - ./matchmaking_server:/matchmaking_server
+    # volumes:
+    #   - ./matchmaking_server:/matchmaking_server
     networks:
       - relations-1
     command: bash -c "npm install body-parser express cors axios amqplib && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/matchmaking_server/matchmaking.js"
@@ -66,8 +66,8 @@ services:
     image: node:14
     ports:
       - 9002:9002
-    volumes:
-      - ./game_server:/game_server
+    # volumes:
+    #   - ./game_server:/game_server
     command: bash -c "npm install chess.js body-parser express express-session express-ejs-layouts cors ejs axios amqplib && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/game_server/game_server.js"
     container_name: game_server
     depends_on: 
@@ -79,8 +79,8 @@ services:
     image: node:14
     ports:
       - 9003:9003
-    volumes:
-      - ./match_history:/match_history
+    # volumes:
+    #   - ./match_history:/match_history
     networks:
       - relations-1
     command: bash -c "npm install body-parser express cors axios amqplib mongoose && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/match_history/match_history.js"
