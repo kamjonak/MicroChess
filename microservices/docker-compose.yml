@@ -7,7 +7,7 @@ services:
       - 8002:80/tcp
     volumes:
       - ./front:/front
-    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express express-session express-ejs-layouts connect-flash passport passport-local cors ejs axios amqplib && node front/front.js"
+    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express express-session express-ejs-layouts connect-flash passport passport-local cors ejs axios amqplib && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/front/front.js"
     container_name: front
     networks: 
       - relations-1
@@ -24,12 +24,12 @@ services:
       - ./users:/users
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors mongoose && node users/users.js"
+    command: bash -c "npm install body-parser express cors mongoose && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/users/users.js"
     depends_on:
-      - users_db
+      - users-db
     container_name: users
 
-  users_db:
+  users-db:
     image: mongo:latest
     volumes:
       - ./data:/data/db
@@ -38,7 +38,7 @@ services:
     networks:
       - relations-1
     command: mongod --quiet --logpath /dev/null
-    container_name: users_db
+    container_name: users-db
 
   matchmaking_server:
     image: node:14
@@ -48,7 +48,7 @@ services:
       - ./matchmaking_server:/matchmaking_server
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors axios amqplib && node matchmaking_server/matchmaking.js"
+    command: bash -c "npm install body-parser express cors axios amqplib && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/matchmaking_server/matchmaking.js"
     depends_on:
       - matchmaking_queue
     container_name: matchmaking_server
@@ -68,7 +68,7 @@ services:
       - 9002:9002
     volumes:
       - ./game_server:/game_server
-    command: bash -c "npm install chess.js body-parser express express-session express-ejs-layouts cors ejs axios amqplib && node game_server/game_server.js"
+    command: bash -c "npm install chess.js body-parser express express-session express-ejs-layouts cors ejs axios amqplib && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/game_server/game_server.js"
     container_name: game_server
     depends_on: 
       - match_history_queue
@@ -83,7 +83,7 @@ services:
       - ./match_history:/match_history
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors axios amqplib mongoose && node match_history/match_history.js"
+    command: bash -c "npm install body-parser express cors axios amqplib mongoose && git clone https://github.com/JunakDeemaz/MicroChess.git && cd MicroChess && git checkout experimental_k8s && node microservices/match_history/match_history.js"
     depends_on:
       - match_history_db
       - match_history_queue
