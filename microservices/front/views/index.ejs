@@ -20,9 +20,27 @@
 <body class="text-center">
   <main class="container">
     
-      <div class="card mx-auto">
+    <div class="card-group">
+      <div class="card">
         <div class="card-body">
-          <h1 class="card-title"> Welcome aodjfojisdfoijahsdoifjsdoi</h1>
+          <h1 class="card-title">Your recent games</h1>
+          <ul class="list-group list-group-flush">
+            <% user_history.forEach(function(item,index){ %>
+              <% if (item.color == item.game_state)  {%>
+                <%- include('partials/history-small-card', {game: item, result: 'success'}); %>
+              <% } else if (item.game_state == 'black' || item.game_state == 'white')  {%>
+                <%- include('partials/history-small-card', {game: item, result: 'danger'}); %>
+              <% } else  { %>
+                <%- include('partials/history-small-warning', {game: item, result: 'warning'}); %>
+              <% } %>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card mx-2">
+        <div class="card-body">
+          <h1 class="card-title">Welcome <%= user %></h1>
           <br>
           <div class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
           <br>
@@ -32,9 +50,9 @@
         </div>
       </div>
 
-      <div class="card mx-auto">
+      <div class="card">
         <div class="card-body">
-          <h1 class="card-title"> Welcome aodjfojisdfoijahsdoifjsdoi</h1>
+          <h1 class="card-title">Welcome aodjfojisdfoijahsdoifjsdoi</h1>
           <br>
           <div class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
           <br>
@@ -43,6 +61,7 @@
           <a class="btn btn-primary" href="/users/logout">Logout</a>
         </div>
       </div>
+    </div>
   </main>
 </body>
 <script src="/index_scripts.js"></script>

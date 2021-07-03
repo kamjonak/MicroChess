@@ -53,19 +53,28 @@ function check_if_active_game(req, res, fun) {
         }); 
 }
 
-// router.get('/', (req,res)=>{
-//     res.render('welcome');
-// })
-
 router.get('/register', (req,res)=>{
     res.render('register');
 })
 
 router.get('/',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
-        res.render('index',{
-            user: req.session.passport.user
-        });
+        axios
+            .post('http://match_history:9003/get_match_history/', {
+                player: req.session.passport.user
+            })
+            .then(function (response) {
+                var history = response.data;
+                res.render('index',{
+                    user: req.session.passport.user,
+                    user_history: history.slice(0, 5)
+                });
+            })
+            .catch(function (error) {
+                console.log("error check if active game");
+                res.send("check if active game");
+            }); 
+        
     })
 })
 
