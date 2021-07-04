@@ -6,29 +6,74 @@
   <title>MicroChess</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- <link rel="stylesheet" href="style.css"> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
+        crossorigin="anonymous"></script>
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='/profile.css'>
+  <script src='/js/chess.js'></script>
+  <script src='/js/chessboard-1.0.0.js'></script>
+  <link rel='stylesheet' href='/css/chessboard-1.0.0.css'>
+  <script src="/profile.js"></script>
 </head>
 
-<body>
-  <p> Welcome <%= user %></p>
-  <span> Your stats: </span>
-    <ul>
-      <li>Wins: <%= stats.wins%></li>
-      <li>Loses: <%= stats.loses%></li>
-      <li>Games Played: <%= stats.games_played%></li>
-    </ul>
-  <br>
-  <ul>
-    <% history.forEach(function(item,index){ %>
-    <ul> game vs <%= item.opponent %>
-          <li> <%= item.pgn %> </li>
-          <li> <%= item.game_state %> </li>
-    </ul>
-    <br>
-    <% }) %>
-  </ul>
+<body class="text-center">
 
+  <main class="container">
+    <h1 class="display-1"> Profile of <%= user %></h1>
+
+    <div class="card">
+      <div class="card-body">
+        <h3 class="display-3 card-title">Statistics</h3>
+
+        <div class="main-st-container">
+          <ul class="list-group list-group-flush w-50">
+            <li class="list-group-item stat">Wins: <%= stats.wins%></li>
+            <li class="list-group-item stat">Loses: <%= stats.loses%></li>
+            <li class="list-group-item stat">Games Played: <%= stats.games_played%></li>
+          </ul>
+
+          <div class="chart-positioner">
+            <div class="chart-container">
+              <h2>Winrate</h2>
+              <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200">
+                <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <circle class="circle-chart__circle" stroke="#00acc1" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.wins / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <g class="circle-chart__info">
+                  <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8"><%= ((stats.games_played > 0) ? parseFloat((100 *stats.wins / stats.games_played)).toFixed(2) : 0)%>%</text>
+                </g>
+              </svg>
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <% history.forEach(function(item,index){ %>
+      <div class="card mt-2">
+        <div class="card-body">
+          <div class="main-game-container">
+            <ul class="list-group list-group-flush w-50">
+              <li class="list-group-item">Opponent: <%= item.opponent%></li>
+              <li class="list-group-item">Color: <%= item.color%></li>
+              <li class="list-group-item">Result: <%= (item.color == item.game_state ? 'win' : (item.game_state == 'draw' ? 'draw' : 'loss')) %></li>
+              <li class="list-group-item">Date: <%= new Date(parseInt(item.date)).toDateString() %></li>
+              <li class="list-group-item"><div class="btn btn-primary" onclick="copy_pgn('<%= item.pgn %>')">Copy PGN notation</div></li>
+            </ul> 
+            
+            <div class="w-25 chessboard" id="board<%= index %>"></div>
+            <script>window.onload = create_board("<%= index %>", "<%= item.pgn %>") </script>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+    
+  </main>
 </body>
 </html>

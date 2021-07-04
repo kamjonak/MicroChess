@@ -1,0 +1,63 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #f5f5f5;
+}
+
+.stat {
+    font-size: 2rem;
+}
+
+.main-st-container {
+    width: 100%;
+    display: flex;
+}
+
+.chart-container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.chart-positioner{
+    display: flex;
+    width: 50%;
+    align-items: center;
+}
+
+.chessboard {
+    margin-left: 20%;
+}
+
+.circle-chart__circle {
+    animation: circle-chart-fill 1s reverse; /* 1 */ 
+    transform: rotate(-90deg); /* 2, 3 */
+    transform-origin: center; /* 4 */
+}
+
+.circle-chart__info {
+    animation: circle-chart-appear 1s forwards;
+    opacity: 0;
+    transform: translateY(0.3em);
+}
+
+@keyframes circle-chart-fill {
+    to { stroke-dasharray: 0 100; }
+}
+
+@keyframes circle-chart-appear {
+    to {
+    opacity: 1;
+    transform: translateY(0);
+    }
+}
