@@ -111,6 +111,17 @@ app.post('/get_match_history', (req, res) => {
     });
 });
 
+
+app.post('/get_recent_history', (req, res) => {
+    let player = req.body.player
+
+    Game.find({player: player}).limit(5).sort({date: -1}).then((games) => {
+        res.send(games);
+    }).catch( (error) => {
+        res.send([])
+    });
+});
+
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
 

@@ -13,7 +13,7 @@ router.get('/register',(req,res)=>{
 router.post('/login',(req,res,next)=>{
     console.log("router post");
     passport.authenticate('local',{
-        successRedirect : '/dashboard',
+        successRedirect : '/',
         failureRedirect: '/users/login',
         failureFlash : true
     })(req,res,next);
