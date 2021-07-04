@@ -115,10 +115,8 @@ app.post('/get_match_history', (req, res) => {
 app.post('/get_recent_history', (req, res) => {
     let player = req.body.player
 
-    Game.find({player: player}).sort({date: -1}).then(function (games) {
-        console.log("recent games");
-        console.log(games);
-        res.send(games.slice(0,5));
+    Game.find({player: player}).limit(5).sort({date: -1}).then((games) => {
+        res.send(games);
     }).catch( (error) => {
         res.send([])
     });
