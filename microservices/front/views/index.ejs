@@ -31,7 +31,7 @@
               <% } else if (item.game_state == 'black' || item.game_state == 'white')  {%>
                 <%- include('partials/history-small-card', {game: item, result: 'danger'}); %>
               <% } else  { %>
-                <%- include('partials/history-small-warning', {game: item, result: 'warning'}); %>
+                <%- include('partials/history-small-card', {game: item, result: 'warning'}); %>
               <% } %>
             <% }) %>
           </ul>
