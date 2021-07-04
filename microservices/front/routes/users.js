@@ -24,6 +24,9 @@ router.post('/register',(req,res)=>{
     const {name, password, password2} = req.body;
     let errors = [];
     console.log(' Name ' + name+ ' pass:' + password);
+
+    if (name.length > 12)
+        errors.push({msg : "Username too long (max 12 characters)"});
     if(!name || !password || !password2) {
         errors.push({msg : "Please fill in all fields"})
     }

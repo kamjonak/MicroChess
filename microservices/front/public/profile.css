@@ -40,10 +40,15 @@ body {
 }
 
 .circle-chart__circle {
-    animation: circle-chart-fill 1s reverse; /* 1 */ 
-    transform: rotate(-90deg); /* 2, 3 */
-    transform-origin: center; /* 4 */
+    animation: circle-chart-fill 1s reverse;
+    transform: rotate(-90deg);
+    transform-origin: center;
 }
+
+.circle-chart__circle--negative {
+    transform: rotate(-90deg) scale(1,-1);
+}
+  
 
 .circle-chart__info {
     animation: circle-chart-appear 1s forwards;

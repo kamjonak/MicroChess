@@ -44,7 +44,9 @@
               <h2>Winrate</h2>
               <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200">
                 <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
-                <circle class="circle-chart__circle" stroke="#00acc1" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.wins / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <circle class="circle-chart__circle" stroke="#dea31b" stroke-width="2" stroke-dasharray="100,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <circle class="circle-chart__circle" stroke="#26ad3d" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.wins / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <circle class="circle-chart__circle circle-chart__circle--negative" stroke="red" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.loses / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
                 <g class="circle-chart__info">
                   <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8"><%= ((stats.games_played > 0) ? parseFloat((100 *stats.wins / stats.games_played)).toFixed(2) : 0)%>%</text>
                 </g>
@@ -57,8 +59,8 @@
 
     <% history.forEach(function(item,index){ %>
       <div class="card mt-2">
-        <div class="card-body">
-          <div class="main-game-container">
+        <div class="card-body game-container">
+          <div class="main-st-container">
             <ul class="list-group list-group-flush w-50">
               <li class="list-group-item">Opponent: <%= item.opponent%></li>
               <li class="list-group-item">Color: <%= item.color%></li>
