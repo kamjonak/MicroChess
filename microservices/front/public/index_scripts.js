@@ -1,6 +1,11 @@
 
 function find_game() {
     var url = "/find_game";
+    document.getElementById('find-game').removeAttribute('onclick')
+    document.getElementById('find-game').innerHTML = ''
+    document.getElementById('find-game').classList.remove('btn')
+    document.getElementById('find-game').classList.remove('btn-primary')
+    document.getElementById('find-game').classList.add('spinner-border')
     $.ajax({
         url: url,
         success: function(data) {

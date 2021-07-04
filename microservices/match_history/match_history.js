@@ -45,7 +45,8 @@ let GameSchema = new users_db.Schema({
     color: String,
     game_state: String,
     pgn: String,
-    date: String
+    date: String,
+    game_id: String
 });
 
 const Game = users_db.model("Game", GameSchema);
@@ -115,10 +116,25 @@ app.post('/get_match_history', (req, res) => {
 app.post('/get_recent_history', (req, res) => {
     let player = req.body.player
 
-    Game.find({player: player}).limit(5).sort({date: -1}).then((games) => {
-        res.send(games);
-    }).catch( (error) => {
-        res.send([])
+    Game.find({player: player}).limit(5).sort({date: -1}).then((player_games) => {
+        Game.find({}).limit(20).sort({date: -1}).then((all_games) => {
+            let set = new Set()
+            let list = []
+            for (const game of all_games) {
+                let [white, black] = (game.color == 'white' ? [game.player, game.opponent] : [game.opponent, game.player]);
+                let id = game.game_id;
+                console.log(id)
+                if (!set.has(id)) {
+                    set.add(id);
+                    list.push({white: white, black: black, game_state: game.game_state})
+                }
+            }
+            res.send({player: player_games, all: list});
+        }).catch((error_all) => {
+            res.send({player: player_games, all: []});
+        });
+    }).catch((error_player) => {
+        res.send({player: [], all: []});
     });
 });
 

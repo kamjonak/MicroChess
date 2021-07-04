@@ -75,7 +75,8 @@ function get_game_info(player, status) {
             color: color,
             game_state: game_state,
             pgn: game_info.game.pgn(),
-            date: Date.now()
+            date: Date.now(),
+            game_id: game_info.game_id
         }
         
         send_channel.sendToQueue("games_to_analyze_queue", Buffer.from(JSON.stringify(game_to_send)));
@@ -120,7 +121,8 @@ app.post('/create_match', (req, res) => {
             w_player: req.body.player1, 
             b_player: req.body.player2,
             last_move_time: date,
-            game_status: 'undecided'
+            game_status: 'undecided',
+            game_id: date + player1 + player2
         }
         player_game[player1] = game_state;
         player_game[player2] = game_state;

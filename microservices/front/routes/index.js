@@ -64,10 +64,14 @@ router.get('/',ensureAuthenticated,(req,res)=>{
                 player: req.session.passport.user
             })
             .then(function (response) {
-                var history = response.data;
+                var user_history = response.data.player;
+                var all_history = response.data.all;
+                console.log(user_history);
+                console.log(all_history);
                 res.render('index',{
                     user: req.session.passport.user,
-                    user_history: history
+                    user_history: user_history,
+                    all_history: all_history
                 });
             })
             .catch(function (error) {

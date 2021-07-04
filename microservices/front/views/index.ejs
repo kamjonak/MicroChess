@@ -39,10 +39,10 @@
       </div>
 
       <div class="card mx-2">
-        <div class="card-body">
+        <div class="card-body justify-content-between align-items-center">
           <h1 class="card-title">Welcome <%= user %></h1>
           <br>
-          <div class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
+          <div id='find-game' class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
           <br>
           <a class="btn btn-primary" href="/profile"> PROFILE </a>
           <br>
@@ -52,13 +52,18 @@
 
       <div class="card">
         <div class="card-body">
-          <h1 class="card-title">Welcome aodjfojisdfoijahsdoifjsdoi</h1>
-          <br>
-          <div class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
-          <br>
-          <a class="btn btn-primary" href="/profile"> PROFILE </a>
-          <br>
-          <a class="btn btn-primary" href="/users/logout">Logout</a>
+          <h1 class="card-title">Recent games</h1>
+          <ul class="list-group list-group-flush">
+            <% all_history.forEach(function(item,index){ %>
+              <% if (item.game_state == 'white')  {%>
+                <%- include('partials/all-history-small-card', {game: item, result: 'left'}); %>
+              <% } else if (item.game_state == 'black')  {%>
+                <%- include('partials/all-history-small-card', {game: item, result: 'right'}); %>
+              <% } else  { %>
+                <%- include('partials/all-history-small-card', {game: item, result: 'warning'}); %>
+              <% } %>
+            <% }) %>
+          </ul>
         </div>
       </div>
     </div>

@@ -135,7 +135,7 @@ function updateStatus () {
 updateStatus();
 
 function go_back() {
-  window.location.replace('/test')
+  window.location.replace('/')
 }
 
 function surrender() {

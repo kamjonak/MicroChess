@@ -25,3 +25,13 @@ body {
     float: none;
     margin-bottom: 10px;
 }
+
+.list-group-item-left {
+    /* border: solid black 1mm; */
+    background-image: linear-gradient(to right, rgb(121, 197, 121), white, white);
+}
+
+.list-group-item-right {
+    /* border: solid black 1mm; */
+    background-image: linear-gradient(to right, white, white, rgb(121, 197, 121));
+}

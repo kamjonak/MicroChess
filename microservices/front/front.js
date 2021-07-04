@@ -10,6 +10,13 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require("passport");
 
+https
+var fs = require('fs');
+var https = require('https');
+var privateKey  = fs.readFileSync(path.join(__dirname, 'ssl/key.pem'), 'utf8');
+var certificate = fs.readFileSync(path.join(__dirname, 'ssl/cert.pem'), 'utf8');
+var credentials = {key: privateKey, cert: certificate};
+
 require('./config/passport')(passport)
 
 const PORT = 80;
@@ -46,5 +53,8 @@ app.use((req,res,next)=> {
 app.use('/',require('./routes/index'));
 app.use('/users',require('./routes/users'));
 
-app.listen(PORT, HOST);
+var httpsServer = https.createServer(credentials, app);
+
+// app.listen(PORT, HOST);
+httpsServer.listen(PORT);
 console.log(`Running on http://${HOST}:${PORT}`);
