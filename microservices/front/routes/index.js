@@ -60,14 +60,14 @@ router.get('/register', (req,res)=>{
 router.get('/',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
         axios
-            .post('http://match_history:9003/get_match_history/', {
+            .post('http://match_history:9003/get_recent_history/', {
                 player: req.session.passport.user
             })
             .then(function (response) {
                 var history = response.data;
                 res.render('index',{
                     user: req.session.passport.user,
-                    user_history: history.slice(0, 5)
+                    user_history: history
                 });
             })
             .catch(function (error) {
