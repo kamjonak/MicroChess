@@ -452,7 +452,7 @@ items:
             io.kompose.service: matchmaking-server
         spec:
           containers:
-            - image: matchmaking:latest
+            - image: europe-docker.pkg.dev/final-deployment-v1/hello-repo/matchmaking-server:v1
               name: matchmaking-server
               ports:
                 - containerPort: 9001
