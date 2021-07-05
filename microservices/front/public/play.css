@@ -1,0 +1,35 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    align-items: center;
+    /* padding-top: 40px; */
+    padding-bottom: 40px;
+    background-color: #f5f5f5;
+}
+
+#chessboard-positioner {
+    position: relative;
+    height: 70vh;
+    width: 0%;
+    left: 50%;
+}
+
+#chessboard {
+    position: absolute;
+    left: -35vh;
+}
+
+.big-card {
+    font-size: 5vh;
+}
+
+#go-back-button {
+    display: none;
+}

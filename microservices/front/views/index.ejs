@@ -44,20 +44,20 @@
           <ul class="list-group-flush">
           
             <li class="list-group-item">
-              <div id='find-game' class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
-            </li>
-
-            <li class="list-group-item">
-              <a class="btn btn-primary" href="/profile/<%= user %>"> PROFILE </a>
-            </li>
-
-            <li class="list-group-item">
               <div class="input-group">
                 <input id="profile_name_input" type="text" class="form-control" placeholder="Search for user" aria-label="Search for user" aria-describedby="basic-addon2">
                 <div class="input-group-append">
                   <button class="btn btn-primary" type="button" onclick="search_profile()">Search</button>
                 </div>
               </div>
+            </li>
+
+            <li class="list-group-item">
+              <div id='find-game' class="btn btn-primary" onclick='find_game()'> Find game </div>
+            </li>
+
+            <li class="list-group-item">
+              <a class="btn btn-primary" href="/profile/<%= user %>"> Profile </a>
             </li>
 
             <li class="list-group-item">

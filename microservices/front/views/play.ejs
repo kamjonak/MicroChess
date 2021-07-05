@@ -6,33 +6,53 @@
   <title>MicroChess</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- <link rel="stylesheet" href="style.css"> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
         crossorigin="anonymous"></script>
 
+  <link rel='stylesheet' href='/play.css'>
   <script src='/js/chess.js'></script>
   <script src='/js/chessboard-1.0.0.js'></script>
   <link rel='stylesheet' href='/css/chessboard-1.0.0.css'>
 </head>
 
-<body>
-  <div id="myBoard" style="width: 400px"></div>
-  <label>Status:</label>
-  <div id="status"></div>
-  <label>FEN:</label>
-  <div id="fen"></div>
-  <label>PGN:</label>
-  <div id="pgn"></div>
+<body class="text-center">
+  <div class="modal fade" id="game-info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Game finished</h5>
+        </div>
+        <div id='game-info' class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick='hide_modal()'>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- <div onclick="send()">Send</div>
-  <div onclick="read()">read</div> -->
-  <div onclick="restart()">Restart</div>
-  <div onclick="go_back()">Go back</div>
-  <div onclick="surrender()">Surrender</div>
-
-<a href="/users/logout">Logout</a>
+  <main class="container">
+    <div class='card big-card'>
+      <span id='opponent'></span>
+    </div>
+    <div class='card mt-2 mb-2 pt-4'>
+      <div id='chessboard-positioner'>
+        <div id="chessboard" style="width: 70vh"></div>
+      </div>
+      <div class='card-body'>
+        <button id='surrender-button' class='btn btn-primary' onclick="surrender()">Surrender</button>
+        <button id='go-back-button' class='btn btn-primary' onclick="redirect_to_homepage()">Return to homepage</button>
+      </div> 
+    </div>
+    <div class='card big-card'>
+      <span id='player'></span>
+    </div>  
+  </main>
 </body>
 <script src="/main.js"></script>
 </html>
