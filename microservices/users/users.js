@@ -133,30 +133,24 @@ app.post('/player_ended_game', (req, res) => {
     res.send("ok");
 });
 
-app.post('/read', (req, res) => {
-    console.log('read in middle');
-    var all;
-    getAll().then((value) => {
-        console.log(value);
-        all = value;
-        console.log('done');
-        console.log(all);
-        res.send(all);
-    });
+
+app.post('/search_users', (req, res) => {
+    const querry = req.body.querry;
+    console.log(querry)
+    let q_regex = new RegExp(querry);
+    console.log(q_regex)
+    User.find({username:{ $regex: q_regex, $options: 'i' }}, (err, users) => {
+        console.log(users);
+        let result = [];
+
+        users.forEach(user => {
+            result.push({username: user.username, wins: user.wins, loses: user.loses, games_played: user.games_played})
+        });
+        res.send(result);
+    })
 });
 
-app.get('/', (req, res) => {
-    console.log("jestem tutaj sb");
-    //res.send("ok");
-    // appdb.get("test", function (err, result) {
-    //     if (err) {
-    //       console.error(err);
-    //     } else {
-    //       console.log(result);
-    //       res.send(result);
-    //     }
-    //   });
-});
+
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);

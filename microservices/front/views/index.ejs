@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='/index.css'>
-
+  <script src='/profile.js'></script>
 </head>
 
 <body class="text-center">
@@ -41,12 +41,29 @@
       <div class="card mx-2">
         <div class="card-body justify-content-between align-items-center">
           <h1 class="card-title">Welcome <%= user %></h1>
-          <br>
-          <div id='find-game' class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
-          <br>
-          <a class="btn btn-primary" href="/profile"> PROFILE </a>
-          <br>
-          <a class="btn btn-primary" href="/users/logout">Logout</a>
+          <ul class="list-group-flush">
+          
+            <li class="list-group-item">
+              <div id='find-game' class="btn btn-primary" onclick='find_game()'> FIND GAME </div>
+            </li>
+
+            <li class="list-group-item">
+              <a class="btn btn-primary" href="/profile/<%= user %>"> PROFILE </a>
+            </li>
+
+            <li class="list-group-item">
+              <div class="input-group">
+                <input id="profile_name_input" type="text" class="form-control" placeholder="Search for user" aria-label="Search for user" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button" onclick="search_profile()">Search</button>
+                </div>
+              </div>
+            </li>
+
+            <li class="list-group-item">
+              <a class="btn btn-primary" href="/users/logout">Logout</a>
+            </li>
+          </ul>
         </div>
       </div>
 

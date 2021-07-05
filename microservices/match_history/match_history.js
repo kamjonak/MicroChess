@@ -106,9 +106,11 @@ connect_to_rabbit();
 app.post('/get_match_history', (req, res) => {
     let player = req.body.player
 
-    Game.find({player: player}, function (err, games) {
+    Game.find({player: player}).sort({date:-1}).then((games) => {
         console.log(games);
         res.send(games);
+    }).catch((error) => {
+        res.send([]);
     });
 });
 
@@ -117,7 +119,7 @@ app.post('/get_recent_history', (req, res) => {
     let player = req.body.player
 
     Game.find({player: player}).limit(5).sort({date: -1}).then((player_games) => {
-        Game.find({}).limit(20).sort({date: -1}).then((all_games) => {
+        Game.find({}).limit(16).sort({date: -1}).then((all_games) => {
             let set = new Set()
             let list = []
             for (const game of all_games) {

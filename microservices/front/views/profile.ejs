@@ -20,7 +20,7 @@
   <script src='/js/chess.js'></script>
   <script src='/js/chessboard-1.0.0.js'></script>
   <link rel='stylesheet' href='/css/chessboard-1.0.0.css'>
-  <script src="/profile.js"></script>
+  <script src='/profile.js'></script>
 </head>
 
 <body class="text-center">
@@ -44,9 +44,15 @@
               <h2>Winrate</h2>
               <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200">
                 <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
-                <circle class="circle-chart__circle" stroke="#dea31b" stroke-width="2" stroke-dasharray="100,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
-                <circle class="circle-chart__circle" stroke="#26ad3d" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.wins / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
-                <circle class="circle-chart__circle circle-chart__circle--negative" stroke="red" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.loses / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <% if (stats.wins + stats.loses < stats.games_played) {%>
+                  <circle class="circle-chart__circle" stroke="#dea31b" stroke-width="2" stroke-dasharray="100,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <% } %>
+                <% if (stats.wins > 0) {%>
+                  <circle class="circle-chart__circle" stroke="#26ad3d" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.wins / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <% } %>
+                <% if (stats.loses > 0) {%>
+                  <circle class="circle-chart__circle circle-chart__circle--negative" stroke="red" stroke-width="2" stroke-dasharray="<%= ((stats.games_played > 0) ? (100 * stats.loses / stats.games_played) : 0)%>,100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                <% } %>
                 <g class="circle-chart__info">
                   <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8"><%= ((stats.games_played > 0) ? parseFloat((100 *stats.wins / stats.games_played)).toFixed(2) : 0)%>%</text>
                 </g>

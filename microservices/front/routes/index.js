@@ -82,22 +82,22 @@ router.get('/',ensureAuthenticated,(req,res)=>{
     })
 })
 
-router.get('/profile',ensureAuthenticated,(req,res)=>{
+router.get('/profile/:user',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
         axios
             .post('http://match_history:9003/get_match_history/', {
-                player: req.session.passport.user
+                player: req.params.user
             })
             .then(function (response) {
 
                 var history = response.data;
                 axios
                     .post('http://users:9000/get_stats', {
-                        player: req.session.passport.user
+                        player: req.params.user
                     })
                     .then(function (response) {
                         res.render('profile',{
-                            user: req.session.passport.user,
+                            user: req.params.user,
                             history: history,
                             stats: response.data
                         });
@@ -116,6 +116,22 @@ router.get('/profile',ensureAuthenticated,(req,res)=>{
 
 router.get('/play',ensureAuthenticated,(req,res)=> {
     res.render('play');
+})
+
+router.get('/search/:querry',ensureAuthenticated,(req,res)=> {
+    console.log(req.params);
+    axios
+        .post('http://users:9000/search_users/', {
+            querry: req.params.querry
+        })
+        .then(function (response) {
+            console.log(response.data);
+            res.render('search_res', {querry: req.params.querry, users: response.data});
+        })
+        .catch(function (error) {
+            console.log("error search");
+            res.send("error search");
+        }); 
 })
 
 
