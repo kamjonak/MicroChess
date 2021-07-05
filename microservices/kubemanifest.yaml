@@ -1,0 +1,559 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: front
+      name: front
+    spec:
+      type: LoadBalancer
+      ports:
+        - name: "8002"
+          port: 8002
+          targetPort: 80
+      selector:
+        io.kompose.service: front
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: game-server
+      name: game-server
+    spec:
+      ports:
+        - name: "9002"
+          port: 9002
+          targetPort: 9002
+      selector:
+        io.kompose.service: game-server
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history
+      name: match-history
+    spec:
+      ports:
+        - name: "9003"
+          port: 9003
+          targetPort: 9003
+      selector:
+        io.kompose.service: match-history
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history-db
+      name: match-history-db
+    spec:
+      ports:
+        - name: "27018"
+          port: 27018
+          targetPort: 27017
+      selector:
+        io.kompose.service: match-history-db
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history-queue
+      name: match-history-queue
+    spec:
+      ports:
+        - name: "5673"
+          port: 5673
+          targetPort: 5672
+        - name: "15673"
+          port: 15673
+          targetPort: 15672
+      selector:
+        io.kompose.service: match-history-queue
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: matchmaking-queue
+      name: matchmaking-queue
+    spec:
+      ports:
+        - name: "5672"
+          port: 5672
+          targetPort: 5672
+        - name: "15672"
+          port: 15672
+          targetPort: 15672
+      selector:
+        io.kompose.service: matchmaking-queue
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: matchmaking-server
+      name: matchmaking-server
+    spec:
+      ports:
+        - name: "9001"
+          port: 9001
+          targetPort: 9001
+      selector:
+        io.kompose.service: matchmaking-server
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: users
+      name: users
+    spec:
+      ports:
+        - name: "9000"
+          port: 9000
+          targetPort: 9000
+      selector:
+        io.kompose.service: users
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: users-db
+      name: users-db
+    spec:
+      ports:
+        - name: "27017"
+          port: 27017
+          targetPort: 27017
+      selector:
+        io.kompose.service: users-db
+    status:
+      loadBalancer: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: front
+      name: front
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: front
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: front
+        spec:
+          containers:
+            - image: front:latest
+              name: front
+              ports:
+                - containerPort: 80
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      creationTimestamp: null
+      name: relations-1
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  io.kompose.network/relations-1: "true"
+      podSelector:
+        matchLabels:
+          io.kompose.network/relations-1: "true"
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: game-server
+      name: game-server
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: game-server
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: game-server
+        spec:
+          containers:
+            - image: game-server:latest
+              name: game-server
+              ports:
+                - containerPort: 9002
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history
+      name: match-history
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: match-history
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: match-history
+        spec:
+          containers:
+            - image: match-history:latest
+              name: match-history
+              ports:
+                - containerPort: 9003
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history-db
+      name: match-history-db
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: match-history-db
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: match-history-db
+        spec:
+          containers:
+            - args:
+                - mongod
+                - --quiet
+                - --logpath
+                - /dev/null
+              image: mongo:latest
+              name: match-history-db
+              ports:
+                - containerPort: 27017
+              resources: {}
+              volumeMounts:
+                - mountPath: /data/db
+                  name: match-history-db-claim0
+          restartPolicy: Always
+          volumes:
+            - name: match-history-db-claim0
+              persistentVolumeClaim:
+                claimName: match-history-db-claim0
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history-db-claim0
+      name: match-history-db-claim0
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: match-history-queue
+      name: match-history-queue
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: match-history-queue
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: match-history-queue
+        spec:
+          containers:
+            - image: rabbitmq:3.6.14-management
+              name: match-history-queue
+              ports:
+                - containerPort: 5672
+                - containerPort: 15672
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: matchmaking-queue
+      name: matchmaking-queue
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: matchmaking-queue
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: matchmaking-queue
+        spec:
+          containers:
+            - image: rabbitmq:3.6.14-management
+              name: matchmaking-queue
+              ports:
+                - containerPort: 5672
+                - containerPort: 15672
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: matchmaking-server
+      name: matchmaking-server
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: matchmaking-server
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: matchmaking-server
+        spec:
+          containers:
+            - image: matchmaking:latest
+              name: matchmaking-server
+              ports:
+                - containerPort: 9001
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: users
+      name: users
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: users
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: users
+        spec:
+          containers:
+            - image: users:latest
+              name: users
+              ports:
+                - containerPort: 9000
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: users-db
+      name: users-db
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: users-db
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifest.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/relations-1: "true"
+            io.kompose.service: users-db
+        spec:
+          containers:
+            - args:
+                - mongod
+                - --quiet
+                - --logpath
+                - /dev/null
+              image: mongo:latest
+              name: users-db
+              ports:
+                - containerPort: 27017
+              resources: {}
+              volumeMounts:
+                - mountPath: /data/db
+                  name: users-db-claim0
+          restartPolicy: Always
+          volumes:
+            - name: users-db-claim0
+              persistentVolumeClaim:
+                claimName: users-db-claim0
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: users-db-claim0
+      name: users-db-claim0
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+kind: List
+metadata: {}
+
