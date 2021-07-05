@@ -29,7 +29,7 @@ const options = {
 
 const connectToDb = () => {
     console.log("Trying to connect")
-    users_db.connect("mongodb://match_history_db:27017/test", options).then(()=>{
+    users_db.connect("mongodb://match-history-db:27017/test", options).then(()=>{
         console.log('MongoDB is connected');
     }).catch(err=>{
         console.log('MongoDB connection unsuccessful, retry after 5 seconds.')
@@ -52,7 +52,7 @@ let GameSchema = new users_db.Schema({
 const Game = users_db.model("Game", GameSchema);
 
 function connect_to_rabbit() {
-    amqp.connect('amqp://match_history_queue', function(error0, connection){
+    amqp.connect('amqp://match-history-queue', function(error0, connection){
         if (error0) {
             console.log("unsuccessful rabbit connection");
             setTimeout(connect_to_rabbit, 5000);

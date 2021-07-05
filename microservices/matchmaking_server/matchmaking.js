@@ -11,8 +11,8 @@ const HOST = '0.0.0.0';
 
 // App
 const app = express();
-app.use(express.json());       // to support JSON-encoded bodies
-app.use(express.urlencoded({     // to support URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({
   extended: true
 })); 
 
@@ -22,7 +22,7 @@ var pairing = {}
 var last = null
 
 function connect_to_rabbit() {
-    amqp.connect('amqp://matchmaking_queue', function(error0, connection){
+    amqp.connect('amqp://matchmaking-queue', function(error0, connection){
         if (error0) {
             console.log("unsuccessful rabbit connection");
             setTimeout(connect_to_rabbit, 5000);
@@ -52,7 +52,7 @@ function connect_to_rabbit() {
                         last = null
 
                         axios
-                            .post('http://game_server:9002/create_match/', {
+                            .post('http://game-server:9002/create_match/', {
                                 player1: msg.content.toString(),
                                 player2: last_cp
                             })

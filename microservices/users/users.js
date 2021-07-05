@@ -23,7 +23,7 @@ const options = {
 }
 
 const connectToDb = () => {
-  users_db.connect("mongodb://users_db:27017/test", options).then(()=>{
+  users_db.connect("mongodb://users-db:27017/test", options).then(()=>{
     console.log('MongoDB is connected');
   }).catch(err=>{
     console.log('MongoDB connection unsuccessful, retry after 5 seconds.')

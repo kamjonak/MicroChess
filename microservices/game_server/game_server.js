@@ -26,7 +26,7 @@ app.use(cors());
 
 
 function connect_to_rabbit() {
-    amqp.connect('amqp://match_history_queue', function(error0, connection){
+    amqp.connect('amqp://match-history-queue', function(error0, connection){
         if (error0) {
             console.log("unsuccessful rabbit connection");
             setTimeout(connect_to_rabbit, 5000);
