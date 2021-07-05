@@ -1,5 +1,5 @@
 <!-- <h1>Register</h1>
-<%- include ('./partials/messages') %>
+
 <form action="/users/register" method="POST">
 <div>
     <label for="name">Name</label>
@@ -57,6 +57,7 @@
     </head>
     <body class="text-center">
       <main class="form-signin">
+        <%- include ('./partials/messages') %>
         <form action="/users/register" method="POST">
 
           <h1 class="h3 mb-3 fw-normal">Register</h1>

@@ -27,8 +27,6 @@ function connect_to_rabbit() {
                     durable: false
                 });
                 send_channel = channel;
-               // channel.sendToQueue(queue, Buffer.from(msg));
-                //console.log(" [x] Sent %s", msg);
             });
         }
     });

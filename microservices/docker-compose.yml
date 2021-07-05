@@ -24,7 +24,7 @@ services:
       - ./users:/users
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors mongoose && node users/users.js"
+    command: bash -c "npm install body-parser express cors mongoose bcryptjs && node users/users.js"
     depends_on:
       - users_db
     container_name: users
