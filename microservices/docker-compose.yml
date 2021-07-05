@@ -2,12 +2,10 @@ version: '3.4'
 
 services:
   front:
-    image: node:14
+    image: front:latest
+    build: ./front
     ports:
       - 8002:80/tcp
-    volumes:
-      - ./front:/front
-    command: bash -c "npm install @chrisoakman/chessboardjs body-parser express express-session express-ejs-layouts connect-flash passport passport-local cors ejs axios amqplib && node front/front.js"
     container_name: front
     networks: 
       - relations-1
@@ -17,17 +15,15 @@ services:
       - game_server
 
   users:
-    image: node:14
+    image: users:latest
+    build: ./users
     ports:
       - 9000:9000
-    volumes:
-      - ./users:/users
+    container_name: users
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors mongoose bcryptjs && node users/users.js"
     depends_on:
       - users_db
-    container_name: users
 
   users_db:
     image: mongo:latest
@@ -35,68 +31,62 @@ services:
       - ./data:/data/db
     ports: 
       - 27017:27017
+    container_name: users_db
     networks:
       - relations-1
     command: mongod --quiet --logpath /dev/null
-    container_name: users_db
 
   matchmaking_server:
-    image: node:14
+    image: matchmaking:latest
+    build: ./matchmaking_server
     ports:
       - 9001:9001
-    volumes:
-      - ./matchmaking_server:/matchmaking_server
+    container_name: matchmaking_server
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors axios amqplib && node matchmaking_server/matchmaking.js"
     depends_on:
       - matchmaking_queue
-    container_name: matchmaking_server
 
   matchmaking_queue:
     image: "rabbitmq:3.6.14-management"
     ports:
       - 5672:5672
       - 15672:15672
+    container_name: "matchmaking_queue"
     networks:
       - relations-1
-    container_name: "matchmaking_queue"
 
   game_server:
-    image: node:14
+    image: game_server:latest
+    build: ./game_server
     ports:
       - 9002:9002
-    volumes:
-      - ./game_server:/game_server
-    command: bash -c "npm install chess.js body-parser express express-session express-ejs-layouts cors ejs axios amqplib && node game_server/game_server.js"
     container_name: game_server
-    depends_on: 
-      - match_history_queue
     networks: 
       - relations-1
+    depends_on: 
+      - match_history_queue
 
   match_history:
-    image: node:14
+    image: match_history:latest
+    build: ./match_history
     ports:
       - 9003:9003
-    volumes:
-      - ./match_history:/match_history
+    container_name: match_history
     networks:
       - relations-1
-    command: bash -c "npm install body-parser express cors axios amqplib mongoose && node match_history/match_history.js"
     depends_on:
       - match_history_db
       - match_history_queue
-    container_name: match_history
 
   match_history_queue:
     image: "rabbitmq:3.6.14-management"
     ports:
       - 5673:5672
       - 15673:15672
+    container_name: match_history_queue
     networks:
       - relations-1
-    container_name: "match_history_queue"
 
   match_history_db:
     image: mongo:latest
@@ -104,10 +94,10 @@ services:
       - ./history_data:/data/db
     ports: 
       - 27018:27017
+    container_name: match_history_db
     networks:
       - relations-1
     command: mongod --quiet --logpath /dev/null
-    container_name: match_history_db
 
 networks:
     relations-1:
