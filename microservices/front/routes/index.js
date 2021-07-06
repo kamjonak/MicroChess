@@ -6,11 +6,11 @@ const axios = require('axios');
 var amqp = require('amqplib/callback_api');
 var send_channel;
 
-var resend_querry = 10;
+var resend_querry = 100;
 
 
 function connect_to_rabbit() {
-    amqp.connect('amqp://matchmaking_queue', function(error0, connection){
+    amqp.connect('amqp://matchmaking-queue', function(error0, connection){
         if (error0) {
             console.log("unsuccessful rabbit connection");
             setTimeout(connect_to_rabbit, 5000);
@@ -27,8 +27,6 @@ function connect_to_rabbit() {
                     durable: false
                 });
                 send_channel = channel;
-               // channel.sendToQueue(queue, Buffer.from(msg));
-                //console.log(" [x] Sent %s", msg);
             });
         }
     });
@@ -38,7 +36,7 @@ connect_to_rabbit();
 
 function check_if_active_game(req, res, fun) {
     axios
-        .post('http://game_server:9002/check_active_game/', {
+        .post('http://game-server:9002/check_active_game/', {
             player: req.session.passport.user
         })
         .then(function (response) {
@@ -60,14 +58,12 @@ router.get('/register', (req,res)=>{
 router.get('/',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
         axios
-            .post('http://match_history:9003/get_recent_history/', {
+            .post('http://match-history:9003/get_recent_history/', {
                 player: req.session.passport.user
             })
             .then(function (response) {
                 var user_history = response.data.player;
                 var all_history = response.data.all;
-                console.log(user_history);
-                console.log(all_history);
                 res.render('index',{
                     user: req.session.passport.user,
                     user_history: user_history,
@@ -85,7 +81,7 @@ router.get('/',ensureAuthenticated,(req,res)=>{
 router.get('/profile/:user',ensureAuthenticated,(req,res)=>{
     check_if_active_game(req, res, function (req, res) {
         axios
-            .post('http://match_history:9003/get_match_history/', {
+            .post('http://match-history:9003/get_match_history/', {
                 player: req.params.user
             })
             .then(function (response) {
@@ -119,13 +115,11 @@ router.get('/play',ensureAuthenticated,(req,res)=> {
 })
 
 router.get('/search/:querry',ensureAuthenticated,(req,res)=> {
-    console.log(req.params);
     axios
         .post('http://users:9000/search_users/', {
             querry: req.params.querry
         })
         .then(function (response) {
-            console.log(response.data);
             res.render('search_res', {querry: req.params.querry, users: response.data});
         })
         .catch(function (error) {
@@ -137,13 +131,11 @@ router.get('/search/:querry',ensureAuthenticated,(req,res)=> {
 
 function await_game(req, res) {
     axios
-        .post('http://matchmaking_server:9001/get_match/', {
+        .post('http://matchmaking-server:9001/get_match/', {
             user: req.session.passport.user
         })
         .then(function (response) {
-            console.log(response.data);
             if (response.data.status == 0) {
-                console.log("game found!")
                 res.send({status: 0});
             }
             else if (response.data.status == 1) {
@@ -160,18 +152,15 @@ function await_game(req, res) {
 
 router.get('/find_game',ensureAuthenticated,(req,res)=>{
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(req.session.passport.user));
-    console.log("sent message to channel");
     await_game(req, res);
 })
 
 function get_initial_board_state(req, res) {
     axios
-        .post('http://game_server:9002/get_board_state/', {
+        .post('http://game-server:9002/get_board_state/', {
             player: req.session.passport.user
         })
         .then(function (response) {
-            console.log(response.data);
-            console.log("got board state!")
             res.send(response.data);
         })
         .catch(function (error) {
@@ -181,16 +170,12 @@ function get_initial_board_state(req, res) {
 }
 
 router.get('/get_initial_board_state',ensureAuthenticated,(req,res)=>{
-    console.log('getting initial board state')
-
     setTimeout(get_initial_board_state, 100, req, res);
 })
 
 router.get('/surrender',ensureAuthenticated,(req,res)=>{
-    console.log('surrender')
-
     axios
-        .post('http://game_server:9002/surrender/', {
+        .post('http://game-server:9002/surrender/', {
             player: req.session.passport.user
         })
         .then(function (response) {
@@ -204,13 +189,10 @@ router.get('/surrender',ensureAuthenticated,(req,res)=>{
 
 function get_board_state(req, res) {
     axios
-        .post('http://game_server:9002/get_board_state/', {
+        .post('http://game-server:9002/get_board_state/', {
             player: req.session.passport.user
         })
         .then(function (response) {
-
-            console.log("get board response");
-            console.log(response.data);
             if (response.data.status != 0) {
                 res.send(response.data);
                 return;
@@ -220,8 +202,6 @@ function get_board_state(req, res) {
                 setTimeout(get_board_state, resend_querry, req, res);
             }
             else {
-                console.log(response.data);
-                console.log("got board state!");
                 res.send(response.data);
             }
         })
@@ -232,21 +212,17 @@ function get_board_state(req, res) {
 }
 
 router.get('/get_board_state',ensureAuthenticated,(req,res)=>{
-    console.log('getting board state')
     get_board_state(req, res);
 })
 
 router.post('/update_board_state',ensureAuthenticated,(req,res)=>{
-    console.log("updating board state");
     axios
-        .post('http://game_server:9002/update_board_state/', {
+        .post('http://game-server:9002/update_board_state/', {
             player: req.session.passport.user,
             source: req.body.source,
             target: req.body.target
         })
         .then(function (response) {
-            console.log(response.data);
-            console.log("updated board state!")
             res.send(response.data);
         })
         .catch(function (error) {

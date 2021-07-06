@@ -9,20 +9,13 @@ var is_game_ended = false;
 
 function initiate_board() {
   var url = "/get_initial_board_state";
-  // alert("i want to get it!")
   $.ajax({
       url: url,
       success: function(data) {
-        if (data.status == 1) {
-          // alert("something went wrong")
-          // window.location.replace('/');
+        if (data.status == 1)
           game_ended('something went wrong');
-        }
-        else if (data.status == 2) {
-          // alert("game timeouted");
-          // window.location.replace('/');
+        else if (data.status == 2)
           game_ended('game_timeouted');
-        }
 
         my_color = data.color;
         opponent = data.opponent;
@@ -69,14 +62,11 @@ function game_ended(info) {
   if (is_game_ended)
     return
   is_game_ended = true;
-  // alert(info);
   $('#game-info').html(info);
   $('#game-info-modal').modal('show')
-  // alert('game ended');
   disable_moving();
   $('#surrender-button').css('display', 'none');
   $('#go-back-button').css('display', 'inline-block');
-  // alert('game ended 2');
 }
 
 function decided_result_game_info(data) {
@@ -112,7 +102,6 @@ function onDragStart (source, piece, position, orientation) {
 
 function onDrop (source, target) {
   // see if the move is legal
-
   if (moves_disabled) return 'snapback'
 
   var move = game.move({
@@ -182,7 +171,6 @@ function surrender() {
         decided_result_game_info(data);
       else 
     game_ended('You surrendered')
-      // alert("you surrendered");
     }, 
     error: function(xhr, status, error) {
         alert(xhr.responseText);
@@ -200,20 +188,15 @@ function enable_moving() {
 
 function get_next_board_state() {
   var url = "/get_board_state";
-  // alert("i want to get it!")
   $.ajax({
       url: url,
       success: function(data) {
         if (data.status == 1) {
-          // alert("something went wrong")
           game_ended('something went wrong')
-          //window.location.replace('/test');
         }
         else if (data.status == 2) {
-          // alert("Game timeouted, " + data.winner + " won!");
           opponent = (data.game_state == 'white' ? 'Black' : 'White');
           game_ended(opponent + " didn't move, " + data.game_state + " won!");
-          //window.location.replace('/test');
         }
 
         if (data.move == my_color)
@@ -221,7 +204,6 @@ function get_next_board_state() {
         else 
           disable_moving()
         
-        // $fen = data.fen
         game.load(data.fen);
         onSnapEnd();
         updateStatus();
@@ -249,18 +231,14 @@ function update_board_state(source, target) {
             get_next_board_state();
           else
           decided_result_game_info(data);
-            // alert(data.game_state)
         }
         else if (data.status == 1) {
           game_ended('something went wrong')
-          // alert("something went wrong")
         }
         else if (data.status == 2) {
           game_ended("Game timeouted, " + data.winner + " won!");
-          // alert("Game timeouted, " + data.winner + " won!");
         }
         else if (data.status == 3) {
-          alert("status 3")
           if (data.move == my_color)
             enable_moving()
           else
