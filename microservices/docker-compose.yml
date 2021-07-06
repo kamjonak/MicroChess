@@ -82,8 +82,8 @@ services:
   match-history-queue:
     image: "rabbitmq:3.6.14-management"
     ports:
-      - 5673:5672
-      - 15673:15672
+      - 5672:5672
+      - 15672:15672
     container_name: match-history-queue
     networks:
       - relations-1
@@ -93,7 +93,7 @@ services:
     volumes:
       - ./history_data:/data/db
     ports: 
-      - 27018:27017
+      - 27017:27017
     container_name: match-history-db
     networks:
       - relations-1

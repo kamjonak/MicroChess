@@ -70,8 +70,8 @@ items:
       name: match-history-db
     spec:
       ports:
-        - name: "27018"
-          port: 27018
+        - name: "27017"
+          port: 27017
           targetPort: 27017
       selector:
         io.kompose.service: match-history-db
@@ -89,11 +89,11 @@ items:
       name: match-history-queue
     spec:
       ports:
-        - name: "5673"
-          port: 5673
+        - name: "5672"
+          port: 5672
           targetPort: 5672
-        - name: "15673"
-          port: 15673
+        - name: "15672"
+          port: 15672
           targetPort: 15672
       selector:
         io.kompose.service: match-history-queue
