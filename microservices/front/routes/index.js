@@ -6,7 +6,7 @@ const axios = require('axios');
 var amqp = require('amqplib/callback_api');
 var send_channel;
 
-var resend_querry = 5000;
+var resend_querry = 100;
 
 
 function connect_to_rabbit() {

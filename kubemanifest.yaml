@@ -205,7 +205,7 @@ items:
             io.kompose.service: front
         spec:
           containers:
-            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/front:v1
+            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/front:v2
               name: front
               ports:
                 - containerPort: 80
