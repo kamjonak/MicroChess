@@ -179,13 +179,13 @@ router.get('/create_custom_game',ensureAuthenticated,(req,res)=>{
 });
 
 router.get('/await_custom_game',ensureAuthenticated,(req,res)=>{
-    await_game(req, res);
+    setTimeout(await_game, 100, req, res);
 });
 
 router.post('/join_custom_game',ensureAuthenticated,(req,res)=>{
     console.log("join custom game" + req.body.code);
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"custom_join", user: req.session.passport.user, code: req.body.code})));
-    await_game(req, res);
+    setTimeout(await_game, 100, req, res);
 });
 
 function get_initial_board_state(req, res) {

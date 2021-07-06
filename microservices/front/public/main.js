@@ -13,7 +13,7 @@ function initiate_board() {
       url: url,
       success: function(data) {
         if (data.status == 1)
-          game_ended('something went wrong');
+          setTimeout(game_ended, 300, 'something went wrong')
         else if (data.status == 2)
           game_ended('game_timeouted');
 
@@ -170,7 +170,7 @@ function surrender() {
       if (data.status == 0)
         decided_result_game_info(data);
       else 
-    game_ended('You surrendered')
+        game_ended('You surrendered')
     }, 
     error: function(xhr, status, error) {
         alert(xhr.responseText);
@@ -192,7 +192,7 @@ function get_next_board_state() {
       url: url,
       success: function(data) {
         if (data.status == 1) {
-          game_ended('something went wrong')
+          setTimeout(game_ended, 300, 'something went wrong')
         }
         else if (data.status == 2) {
           opponent = (data.game_state == 'white' ? 'Black' : 'White');
@@ -233,7 +233,7 @@ function update_board_state(source, target) {
           decided_result_game_info(data);
         }
         else if (data.status == 1) {
-          game_ended('something went wrong')
+          setTimeout(game_ended, 300, 'something went wrong')
         }
         else if (data.status == 2) {
           game_ended("Game timeouted, " + data.winner + " won!");
