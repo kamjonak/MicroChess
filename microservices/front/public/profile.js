@@ -5,7 +5,7 @@ function create_board (number, position) {
 }
 
 function copy_pgn(pgn) {
-    $('#input').value(pgn)
+    $('#input').val(pgn);
     var copyText = document.querySelector("#input");
     copyText.select();
     document.execCommand("copy");
