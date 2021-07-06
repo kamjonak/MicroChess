@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pl">
+
+<head>
+  <meta charset="utf-8">
+  <title>MicroChess</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='/index.css'>
+  <script src='/profile.js'></script>
+</head>
+
+<body class="text-center">
+
+  <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div id='info' class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick='hide_modal()'>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    
+    <div class="card-group">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title">Your recent games</h1>
+          <ul class="list-group list-group-flush">
+            <% user_history.forEach(function(item,index){ %>
+              <% if (item.color == item.game_state)  {%>
+                <%- include('partials/history-small-card', {game: item, result: 'success'}); %>
+              <% } else if (item.game_state == 'black' || item.game_state == 'white')  {%>
+                <%- include('partials/history-small-card', {game: item, result: 'danger'}); %>
+              <% } else  { %>
+                <%- include('partials/history-small-card', {game: item, result: 'warning'}); %>
+              <% } %>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card mx-2">
+        <div class="card-body justify-content-between align-items-center">
+          <h1 class="card-title">Welcome <%= user %></h1>
+          <ul class="list-group-flush">
+          
+            <li class="list-group-item">
+              <div class="input-group">
+                <input id="profile_name_input" type="text" class="form-control" placeholder="Search for user" aria-label="Search for user" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button" onclick="search_profile()">Search</button>
+                </div>
+              </div>
+            </li>
+
+            <li class="list-group-item">
+              <div id='find-game' class="btn btn-primary" onclick='find_game()'> Find game </div>
+            </li>
+
+            <li class="list-group-item">
+              <div id='find-custom-game' class="btn btn-primary" onclick='create_custom()'> Create custom game </div>
+            </li>
+
+            <li class="list-group-item">
+              <div class="input-group">
+                <input id="custom_code_input" type="text" class="form-control" placeholder="Custom game code" aria-label="Custom game code" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button" onclick="join_custom_game()">Join</button>
+                </div>
+              </div>
+            </li>
+            
+            <li class="list-group-item">
+              <a class="btn btn-primary" href="/profile/<%= user %>"> Profile </a>
+            </li>
+
+            <li class="list-group-item">
+              <a class="btn btn-primary" href="/users/logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title">Recent games</h1>
+          <ul class="list-group list-group-flush">
+            <% all_history.forEach(function(item,index){ %>
+              <% if (item.game_state == 'white')  {%>
+                <%- include('partials/all-history-small-card', {game: item, result: 'left'}); %>
+              <% } else if (item.game_state == 'black')  {%>
+                <%- include('partials/all-history-small-card', {game: item, result: 'right'}); %>
+              <% } else  { %>
+                <%- include('partials/all-history-small-card', {game: item, result: 'warning'}); %>
+              <% } %>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+<script src="/index_scripts.js"></script>
+</html>
