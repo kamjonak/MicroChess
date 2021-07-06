@@ -59,6 +59,7 @@ function join_custom_game() {
     $.ajax({
         url: '/join_custom_game',
         data: {code: code},
+        type: 'POST',
         success: function(data) {
             if (data.status == 0)
                 window.location.replace('/play');
