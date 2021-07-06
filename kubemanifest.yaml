@@ -205,7 +205,7 @@ items:
             io.kompose.service: front
         spec:
           containers:
-            - image: europe-docker.pkg.dev/micro-chess-v1/hello-repo/front:v5
+            - image: europe-docker.pkg.dev/micro-chess-v1/hello-repo/front:v6
               name: front
               ports:
                 - containerPort: 80
