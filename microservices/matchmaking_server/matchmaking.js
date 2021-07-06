@@ -49,6 +49,8 @@ function connect_to_rabbit() {
 
                     if (user in pairing && pairing[user].status == 1)
                         delete pairing[user];
+                    if (user in pairing && pairing[user].status == 0)
+                        return
 
                     if(type == 'normal') {
                         if (user in user_codes) {
@@ -87,7 +89,6 @@ function connect_to_rabbit() {
                         }
                     }
                     else if (type == 'custom') {
-
                         if (user == last) 
                             last = null;
 
@@ -100,6 +101,8 @@ function connect_to_rabbit() {
                         user_codes[user] = code;
                     }
                     else if (type == 'custom_join') {
+                        if (user == last) 
+                            last = null;
                         let code = parsed_msg.code;
 
                         if (user in user_codes && user_codes[user] in codes) {
