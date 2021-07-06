@@ -27,11 +27,9 @@ body {
 }
 
 .list-group-item-left {
-    /* border: solid black 1mm; */
     background-image: linear-gradient(to right, #bee9be, white, white);
 }
 
 .list-group-item-right {
-    /* border: solid black 1mm; */
     background-image: linear-gradient(to right, white, white, #bee9be);
 }

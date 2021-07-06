@@ -21,7 +21,6 @@ app.use(cors())
 var codes = {}
 var user_codes = {}
 var pairing = {}
-var custom_pairing = {}
 var last = null
 
 function connect_to_rabbit() {
