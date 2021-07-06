@@ -47,7 +47,15 @@ function connect_to_rabbit() {
                     let type = parsed_msg.type;
                     let user = parsed_msg.user;
 
+                    if (user in pairing && pairing[user].status == 1)
+                        delete pairing[user];
+
                     if(type == 'normal') {
+                        if (user in user_codes) {
+                            delete codes[user_codes[user]];
+                            delete user_codes[user];
+                        }
+
                         if (user == last || user in pairing)
                             return;
 
@@ -79,8 +87,9 @@ function connect_to_rabbit() {
                         }
                     }
                     else if (type == 'custom') {
-                        console.log(type);
-                        console.log(user);
+
+                        if (user == last) 
+                            last = null;
 
                         let code = Math.floor(Math.random() * 90000) + 10000;
                         while (code in codes) {
@@ -91,12 +100,19 @@ function connect_to_rabbit() {
                         user_codes[user] = code;
                     }
                     else if (type == 'custom_join') {
-                        console.log(type);
-                        console.log(user);
                         let code = parsed_msg.code;
+
+                        if (user in user_codes && user_codes[user] in codes) {
+                            delete codes[user_codes[user]];
+                            delete user_codes[user];
+                        }
+
                         if (code in codes) {
                             let creator = codes[code];
                             delete codes[code];
+
+                            if (user == creator)
+                                return;
 
                             axios
                                 .post('http://game-server:9002/create_match/', {
@@ -137,11 +153,10 @@ app.post('/get_match', (req, res) => {
     let user = req.body.user
     if(user in pairing) {
         if (pairing[user].status == 0) {
-            delete pairing[user]
+            pairing[user].status = 1;
             res.send({status: 0})
         }
         else {
-            delete pairing[user]
             res.send({status: 1})
         }
     }
@@ -154,7 +169,6 @@ app.post('/get_custom_code', (req, res) => {
     let user = req.body.user
     if(user in user_codes) {
         let code = user_codes[user];
-        delete user_codes[user];
 
         res.send({status: 0, code: code});
         return;

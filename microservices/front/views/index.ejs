@@ -18,6 +18,20 @@
 </head>
 
 <body class="text-center">
+
+  <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div id='info' class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick='hide_modal()'>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <main class="container">
     
     <div class="card-group">
@@ -57,7 +71,7 @@
             </li>
 
             <li class="list-group-item">
-              <div id='find-game' class="btn btn-primary" onclick='create_custom()'> Create custom game </div>
+              <div id='find-custom-game' class="btn btn-primary" onclick='create_custom()'> Create custom game </div>
             </li>
 
             <li class="list-group-item">

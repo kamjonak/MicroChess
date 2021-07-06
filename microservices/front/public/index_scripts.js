@@ -1,5 +1,18 @@
+var in_queue = false;
+
+function alert_code(info) {
+    $('#info').html(info);
+    $('#info-modal').modal('show')
+}
+
+function hide_modal() {
+    $('#info-modal').modal('hide');
+  }
 
 function find_game() {
+    if (in_queue)
+        return;
+    in_queue = true;
     var url = "/find_game";
     document.getElementById('find-game').removeAttribute('onclick');
     document.getElementById('find-game').innerHTML = '';
@@ -12,10 +25,10 @@ function find_game() {
             if (data.status == 0)
                 window.location.replace('/play');
             else
-                alert("game cannot be found");
+                alert_code("game cannot be found");
         }, 
         error: function(xhr, status, error) {
-            alert(xhr.responseText);
+            alert_code(xhr.responseText);
         }
     });
 }
@@ -27,34 +40,42 @@ function await_custom_game() {
             if (data.status == 0)
                 window.location.replace('/play');
             else
-                alert("game cannot be found");
+                alert_code("game cannot be found");
         }, 
         error: function(xhr, status, error) {
-            alert(xhr.responseText);
+            alert_code(xhr.responseText);
         }
     });
 }
 
 function create_custom() {
+    if (in_queue)
+        return;
+    in_queue = true;
+
+    document.getElementById('find-custom-game').removeAttribute('onclick');
+    document.getElementById('find-custom-game').innerHTML = '';
+    document.getElementById('find-custom-game').classList.remove('btn');
+    document.getElementById('find-custom-game').classList.remove('btn-primary');
+    document.getElementById('find-custom-game').classList.add('spinner-border');
     $.ajax({
         url: "/create_custom_game",
         success: function(data) {
             if (data.status == 0) {
-                alert(data.code);
+                alert_code("Custom game code: " + data.code.toString());
                 await_custom_game();
             }
             else
-                alert("custom game cannot be found");
+                alert_code("custom game cannot be found");
         }, 
         error: function(xhr, status, error) {
-            alert(xhr.responseText);
+            alert_code(xhr.responseText);
         }
     });
 }
 
 function join_custom_game() {
     let code = document.getElementById('custom_code_input').value;
-    alert(code);
 
     $.ajax({
         url: '/join_custom_game',
@@ -64,10 +85,10 @@ function join_custom_game() {
             if (data.status == 0)
                 window.location.replace('/play');
             else
-                alert("game cannot be found");
+                alert_code("game cannot be found");
         }, 
         error: function(xhr, status, error) {
-            alert(xhr.responseText);
+            alert_code(xhr.responseText);
         }
     });
 }

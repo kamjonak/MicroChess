@@ -171,22 +171,22 @@ function await_custom_code(req, res) {
 router.get('/find_game',ensureAuthenticated,(req,res)=>{
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"normal", user: req.session.passport.user})));
     await_game(req, res);
-})
+});
 
 router.get('/create_custom_game',ensureAuthenticated,(req,res)=>{
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"custom", user: req.session.passport.user})));
     await_custom_code(req, res);
-})
+});
 
 router.get('/await_custom_game',ensureAuthenticated,(req,res)=>{
     await_game(req, res);
-})
+});
 
 router.post('/join_custom_game',ensureAuthenticated,(req,res)=>{
     console.log("join custom game" + req.body.code);
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"custom_join", user: req.session.passport.user, code: req.body.code})));
     await_game(req, res);
-})
+});
 
 function get_initial_board_state(req, res) {
     axios

@@ -15,7 +15,6 @@ require('./config/passport')(passport)
 const PORT = 80;
 const HOST = '0.0.0.0';
 
-// App
 const app = express();
 
 app.set("view engine", "ejs");
