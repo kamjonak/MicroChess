@@ -86,20 +86,10 @@ app.post('/get_stats', (req, res) => {
 });
 
 app.post('/player_ended_game', (req, res) => {
-    console.log('received data from match history');
     var player = req.body.player;
     var match_result = req.body.result;
 
-    console.log(player);
-
     User.findOne({username: player}, function (err, user) {
-        let wins = user.wins;
-        let loses = user.loses;
-        let games_played = user.games_played;
-
-        console.log("found user:");
-        console.log(user);
-
         if (match_result == 'win') {
             user.wins++;
             user.games_played++;
@@ -121,11 +111,8 @@ app.post('/player_ended_game', (req, res) => {
 
 app.post('/search_users', (req, res) => {
     const querry = req.body.querry;
-    console.log(querry)
     let q_regex = new RegExp(querry);
-    console.log(q_regex)
     User.find({username:{ $regex: q_regex, $options: 'i' }}, (err, users) => {
-        console.log(users);
         let result = [];
 
         users.forEach(user => {

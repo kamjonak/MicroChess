@@ -40,7 +40,6 @@ function connect_to_rabbit() {
                 });
 
                 channel.consume(queue, function(msg) {
-                    console.log(" [x] Received %s", msg.content.toString());
                     if (msg.content.toString() == last || msg.content.toString() in pairing)
                         return;
 
@@ -57,9 +56,6 @@ function connect_to_rabbit() {
                                 player2: last_cp
                             })
                             .then(function (response) {
-                                console.log("text");
-                                console.log(response.data);
-
                                 if (response.data.status == 0) {
                                     pairing[last_cp] = {status: 0, opponent: msg.content.toString(), color: 'white'};
                                     pairing[msg.content.toString()] = {status: 0, opponent: last, color: 'black'};
@@ -84,19 +80,9 @@ function connect_to_rabbit() {
 
 connect_to_rabbit();
 
-app.get('/', (req, res) => {
-    console.log("jestem tutaj sb");
-    
-});
-
 app.post('/get_match', (req, res) => {
-    console.log("get_Var");
     let user = req.body.user
-    console.log("user: " + user)
-    console.log(pairing)
-    console.log(last)
     if(user in pairing) {
-        console.log("jest gra");
         if (pairing[user].status == 0) {
             delete pairing[user]
             res.send({status: 0})
@@ -107,7 +93,6 @@ app.post('/get_match', (req, res) => {
         }
     }
     else {
-        console.log("nie ma gry jeszcze");
         res.send({status: 2})
     }
 });

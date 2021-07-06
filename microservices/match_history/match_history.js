@@ -71,15 +71,10 @@ function connect_to_rabbit() {
 
                 channel.consume(queue, function(msg) {
                     let game_info = JSON.parse(msg.content.toString());
-                    console.log(" [x] Received %s", game_info);
                     let game = new Game(game_info);
                     game.save();
 
                     let game_result = (game_info.color == game_info.game_state ? 'win' : (game_info.game_state == 'draw' ? 'draw' : 'loss'));
-
-
-                    console.log(game_info.player);
-                    console.log(game_result);
 
                     axios
                         .post('http://users:9000/player_ended_game/', {
@@ -107,7 +102,6 @@ app.post('/get_match_history', (req, res) => {
     let player = req.body.player
 
     Game.find({player: player}).sort({date:-1}).then((games) => {
-        console.log(games);
         res.send(games);
     }).catch((error) => {
         res.send([]);
@@ -125,7 +119,6 @@ app.post('/get_recent_history', (req, res) => {
             for (const game of all_games) {
                 let [white, black] = (game.color == 'white' ? [game.player, game.opponent] : [game.opponent, game.player]);
                 let id = game.game_id;
-                console.log(id)
                 if (!set.has(id)) {
                     set.add(id);
                     list.push({white: white, black: black, game_state: game.game_state})

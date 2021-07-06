@@ -65,7 +65,6 @@ function get_game_info(player, status) {
     let [opponent, color] = ((player == game_info.w_player) ? [game_info.b_player, 'white'] : [game_info.w_player, 'black']);
     let game_state = (game_info.game_status == 'undecided' ? calculate_game_state(game_info.game) : game_info.game_status);
     let surrender = game_info.surrender
-    console.log(game_state + ' ' + player);
 
     if (game_state != 'undecided') {
 
@@ -99,19 +98,14 @@ function get_game_info(player, status) {
 app.post('/create_match', (req, res) => {
     var player1 = req.body.player1;
     var player2 = req.body.player2;
-    console.log("creating match for " + player1 + " " + player2);
 
     var date = Date.now()
-
-    console.log("current date" + date.toString());
 
     if(player1 in player_game && Math.abs(player_game[player1].last_move_time - date) > game_timeout)
         delete player_game[player1];
     
     if(player2 in player_game && Math.abs(player_game[player2].last_move_time - date) > game_timeout)
         delete player_game[player2];
-
-    console.log("after player check");
 
     if (player1 in player_game || player2 in player_game) {
         res.send({status:1});
@@ -137,7 +131,6 @@ app.post('/create_match', (req, res) => {
 app.post('/get_board_state', (req, res) => {
     let player = req.body.player;
     if (!(player in player_game)) {
-        console.log(" sb nie ma mnie");
         res.send({status: 1});
         return;
     }
@@ -161,7 +154,6 @@ app.post('/update_board_state', (req, res) => {
     let target = req.body.target;
 
     if (!(player in player_game)) {
-        console.log("status = 1")
         res.send({status: 1});
         return;
     }
@@ -183,11 +175,9 @@ app.post('/update_board_state', (req, res) => {
 
         if (game_info.game.turn() == color && game_info.game.move({from: source, to:target, promotion: 'q'}) !== null) {
             game_info.last_move_time = Date.now()
-            console.log("status = 0")
             res.send(get_game_info(player, 0))
         }
         else {
-            console.log("status = 3")
             res.send(get_game_info(player, 3))
         }
     }    
@@ -203,7 +193,6 @@ app.post('/check_active_game', (req, res) => {
 
 app.post('/surrender', (req, res) => {
     let player = req.body.player;
-    console.log("surrender " + player);
     if (player in player_game && !player_game[player].surrender) {
         player_game[player].game_status = (player == player_game[player].w_player ? 'black' : 'white');
         player_game[player].surrender = true

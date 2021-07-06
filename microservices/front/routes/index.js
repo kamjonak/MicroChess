@@ -64,8 +64,6 @@ router.get('/',ensureAuthenticated,(req,res)=>{
             .then(function (response) {
                 var user_history = response.data.player;
                 var all_history = response.data.all;
-                console.log(user_history);
-                console.log(all_history);
                 res.render('index',{
                     user: req.session.passport.user,
                     user_history: user_history,
@@ -117,13 +115,11 @@ router.get('/play',ensureAuthenticated,(req,res)=> {
 })
 
 router.get('/search/:querry',ensureAuthenticated,(req,res)=> {
-    console.log(req.params);
     axios
         .post('http://users:9000/search_users/', {
             querry: req.params.querry
         })
         .then(function (response) {
-            console.log(response.data);
             res.render('search_res', {querry: req.params.querry, users: response.data});
         })
         .catch(function (error) {
@@ -139,9 +135,7 @@ function await_game(req, res) {
             user: req.session.passport.user
         })
         .then(function (response) {
-            console.log(response.data);
             if (response.data.status == 0) {
-                console.log("game found!")
                 res.send({status: 0});
             }
             else if (response.data.status == 1) {
@@ -158,7 +152,6 @@ function await_game(req, res) {
 
 router.get('/find_game',ensureAuthenticated,(req,res)=>{
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(req.session.passport.user));
-    console.log("sent message to channel");
     await_game(req, res);
 })
 
@@ -168,8 +161,6 @@ function get_initial_board_state(req, res) {
             player: req.session.passport.user
         })
         .then(function (response) {
-            console.log(response.data);
-            console.log("got board state!")
             res.send(response.data);
         })
         .catch(function (error) {
@@ -179,14 +170,10 @@ function get_initial_board_state(req, res) {
 }
 
 router.get('/get_initial_board_state',ensureAuthenticated,(req,res)=>{
-    console.log('getting initial board state')
-
     setTimeout(get_initial_board_state, 100, req, res);
 })
 
 router.get('/surrender',ensureAuthenticated,(req,res)=>{
-    console.log('surrender')
-
     axios
         .post('http://game-server:9002/surrender/', {
             player: req.session.passport.user
@@ -206,9 +193,6 @@ function get_board_state(req, res) {
             player: req.session.passport.user
         })
         .then(function (response) {
-
-            console.log("get board response");
-            console.log(response.data);
             if (response.data.status != 0) {
                 res.send(response.data);
                 return;
@@ -218,8 +202,6 @@ function get_board_state(req, res) {
                 setTimeout(get_board_state, resend_querry, req, res);
             }
             else {
-                console.log(response.data);
-                console.log("got board state!");
                 res.send(response.data);
             }
         })
@@ -230,12 +212,10 @@ function get_board_state(req, res) {
 }
 
 router.get('/get_board_state',ensureAuthenticated,(req,res)=>{
-    console.log('getting board state')
     get_board_state(req, res);
 })
 
 router.post('/update_board_state',ensureAuthenticated,(req,res)=>{
-    console.log("updating board state");
     axios
         .post('http://game-server:9002/update_board_state/', {
             player: req.session.passport.user,
@@ -243,8 +223,6 @@ router.post('/update_board_state',ensureAuthenticated,(req,res)=>{
             target: req.body.target
         })
         .then(function (response) {
-            console.log(response.data);
-            console.log("updated board state!")
             res.send(response.data);
         })
         .catch(function (error) {
