@@ -452,7 +452,7 @@ items:
             io.kompose.service: matchmaking-server
         spec:
           containers:
-            - image: europe-docker.pkg.dev/micro-chess-v1/hello-repo/matchmaking-server:v2
+            - image: europe-docker.pkg.dev/micro-chess-v1/hello-repo/matchmaking-server:v3
               name: matchmaking-server
               ports:
                 - containerPort: 9001
