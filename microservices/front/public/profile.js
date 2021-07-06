@@ -5,7 +5,10 @@ function create_board (number, position) {
 }
 
 function copy_pgn(pgn) {
-    navigator.clipboard.writeText(pgn);
+    $('#input').html(pgn)
+    var copyText = document.querySelector("#input");
+    copyText.select();
+    document.execCommand("copy");
 }
 
 function search_profile() {
