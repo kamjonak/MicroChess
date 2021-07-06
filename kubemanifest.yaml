@@ -205,7 +205,7 @@ items:
             io.kompose.service: front
         spec:
           containers:
-            - image: europe-docker.pkg.dev/final-deployment-v1/hello-repo/front:v1
+            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/front:v1
               name: front
               ports:
                 - containerPort: 80
@@ -253,7 +253,7 @@ items:
             io.kompose.service: game-server
         spec:
           containers:
-            - image: europe-docker.pkg.dev/final-deployment-v1/hello-repo/game-server:v1
+            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/game-server:v1
               name: game-server
               ports:
                 - containerPort: 9002
@@ -287,7 +287,7 @@ items:
             io.kompose.service: match-history
         spec:
           containers:
-            - image: europe-docker.pkg.dev/final-deployment-v1/hello-repo/match-history:v1
+            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/match-history:v1
               name: match-history
               ports:
                 - containerPort: 9003
@@ -452,7 +452,7 @@ items:
             io.kompose.service: matchmaking-server
         spec:
           containers:
-            - image: europe-docker.pkg.dev/final-deployment-v1/hello-repo/matchmaking-server:v1
+            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/matchmaking-server:v1
               name: matchmaking-server
               ports:
                 - containerPort: 9001
@@ -486,7 +486,7 @@ items:
             io.kompose.service: users
         spec:
           containers:
-            - image: europe-docker.pkg.dev/final-deployment-v1/hello-repo/users:v1
+            - image: europe-docker.pkg.dev/final-deployment-v2/hello-repo/users:v1
               name: users
               ports:
                 - containerPort: 9000
