@@ -57,6 +57,19 @@
             </li>
 
             <li class="list-group-item">
+              <div id='find-game' class="btn btn-primary" onclick='create_custom()'> Create custom game </div>
+            </li>
+
+            <li class="list-group-item">
+              <div class="input-group">
+                <input id="custom_code_input" type="text" class="form-control" placeholder="Custom game code" aria-label="Custom game code" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button" onclick="join_custom_game()">Join</button>
+                </div>
+              </div>
+            </li>
+            
+            <li class="list-group-item">
               <a class="btn btn-primary" href="/profile/<%= user %>"> Profile </a>
             </li>
 

@@ -150,8 +150,40 @@ function await_game(req, res) {
         }); 
 }
 
+function await_custom_code(req, res) {
+    axios
+        .post('http://matchmaking-server:9001/get_custom_code/', {
+            user: req.session.passport.user
+        })
+        .then(function (response) {
+            if (response.data.status == 0) {
+                res.send({status: 0, code: response.data.code});
+            }
+            else
+                setTimeout(await_custom_code, resend_querry, req, res);
+        })
+        .catch(function (error) {
+            console.log("error await game");
+            res.send("error await game");
+        });
+}
+
 router.get('/find_game',ensureAuthenticated,(req,res)=>{
-    send_channel.sendToQueue("matchmakingQueue", Buffer.from(req.session.passport.user));
+    send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"normal", user: req.session.passport.user})));
+    await_game(req, res);
+})
+
+router.get('/create_custom_game',ensureAuthenticated,(req,res)=>{
+    send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"custom", user: req.session.passport.user})));
+    await_custom_code(req, res);
+})
+
+router.get('/await_custom_game',ensureAuthenticated,(req,res)=>{
+    await_game(req, res);
+})
+
+router.post('/join_custom_game',ensureAuthenticated,(req,res)=>{
+    send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"custom_join", user: req.session.passport.user, code: req.body.code})));
     await_game(req, res);
 })
 

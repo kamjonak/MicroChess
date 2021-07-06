@@ -18,7 +18,10 @@ app.use(express.urlencoded({
 
 app.use(cors())
 
+var codes = {}
+var user_codes = {}
 var pairing = {}
+var custom_pairing = {}
 var last = null
 
 function connect_to_rabbit() {
@@ -40,38 +43,88 @@ function connect_to_rabbit() {
                 });
 
                 channel.consume(queue, function(msg) {
-                    if (msg.content.toString() == last || msg.content.toString() in pairing)
-                        return;
+                    let parsed_msg = JSON.parse(msg.content);
+                    let type = parsed_msg.type;
+                    let user = parsed_msg.user;
 
-                    if (last == null) {
-                        last = msg.content.toString()
-                    }
-                    else {
-                        let last_cp = last
-                        last = null
+                    if(type == 'normal') {
+                        if (user == last || user in pairing)
+                            return;
 
-                        axios
-                            .post('http://game-server:9002/create_match/', {
-                                player1: msg.content.toString(),
-                                player2: last_cp
-                            })
-                            .then(function (response) {
-                                if (response.data.status == 0) {
-                                    pairing[last_cp] = {status: 0, opponent: msg.content.toString(), color: 'white'};
-                                    pairing[msg.content.toString()] = {status: 0, opponent: last, color: 'black'};
-                                }
-                                else {
-                                    pairing[last_cp] = {status: 1};
-                                    pairing[msg.content.toString()] = {status: 1};
-                                }
-                            })
-                            .catch(function (error) {
-                                console.log("error");
-                            });
+                        if (last == null) {
+                            last = user;
+                        }
+                        else {
+                            let last_cp = last
+                            last = null
+
+                            axios
+                                .post('http://game-server:9002/create_match/', {
+                                    player1: user,
+                                    player2: last_cp
+                                })
+                                .then(function (response) {
+                                    if (response.data.status == 0) {
+                                        pairing[last_cp] = {status: 0, opponent: user, color: 'white'};
+                                        pairing[user] = {status: 0, opponent: last, color: 'black'};
+                                    }
+                                    else {
+                                        pairing[last_cp] = {status: 1};
+                                        pairing[user] = {status: 1};
+                                    }
+                                })
+                                .catch(function (error) {
+                                    console.log("error");
+                                });
+                        }
                     }
-                  }, {
-                      noAck: true
-                    });
+                    else if (type == 'custom') {
+                        console.log(type);
+                        console.log(user);
+
+                        let code = Math.floor(Math.random() * 90000) + 10000;
+                        while (code in codes) {
+                            code = Math.floor(Math.random() * 90000) + 10000;
+                        }
+                        
+                        codes[code] = user;
+                        user_codes[user] = code;
+                    }
+                    else if (type == 'custom_join') {
+                        console.log(type);
+                        console.log(user);
+                        let code = parsed_msg.code;
+                        if (code in codes) {
+                            let creator = codes[code];
+                            delete codes[code];
+
+                            axios
+                                .post('http://game-server:9002/create_match/', {
+                                    player1: user,
+                                    player2: creator
+                                })
+                                .then(function (response) {
+                                    
+                                    if (response.data.status == 0) {
+                                        pairing[creator] = {status: 0, opponent: user, color: 'white'};
+                                        pairing[user] = {status: 0, opponent: last, color: 'black'};
+                                    }
+                                    else {
+                                        pairing[creator] = {status: 1};
+                                        pairing[user] = {status: 1};
+                                    }
+                                })
+                                .catch(function (error) {
+                                    console.log("error");
+                                });
+                        }
+                        else {
+                            pairing[user] = {status: 1};
+                        }
+                    }
+                }, {
+                    noAck: true
+                });
             });
 
         }
@@ -91,6 +144,20 @@ app.post('/get_match', (req, res) => {
             delete pairing[user]
             res.send({status: 1})
         }
+    }
+    else {
+        res.send({status: 2})
+    }
+});
+
+app.post('/get_custom_code', (req, res) => {
+    let user = req.body.user
+    if(user in user_codes) {
+        let code = user_codes[user];
+        delete user_codes[user];
+
+        res.send({status: 0, code: code});
+        return;
     }
     else {
         res.send({status: 2})
