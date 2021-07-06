@@ -170,12 +170,12 @@ function await_custom_code(req, res) {
 
 router.get('/find_game',ensureAuthenticated,(req,res)=>{
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"normal", user: req.session.passport.user})));
-    await_game(req, res);
+    setTimeout(await_game, 100, req, res);
 });
 
 router.get('/create_custom_game',ensureAuthenticated,(req,res)=>{
     send_channel.sendToQueue("matchmakingQueue", Buffer.from(JSON.stringify({type:"custom", user: req.session.passport.user})));
-    await_custom_code(req, res);
+    setTimeout(await_custom_code, 100, req, res);
 });
 
 router.get('/await_custom_game',ensureAuthenticated,(req,res)=>{
